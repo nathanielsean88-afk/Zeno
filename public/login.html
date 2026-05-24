@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -133,9 +134,14 @@
         .cl-footerActionText { color: var(--text2) !important; font-family:'Space Grotesk',sans-serif !important; }
         .cl-footerActionLink { color: var(--neon) !important; font-weight:600 !important; }
 
-        /* Sembunyikan Secured by Clerk */
-        .cl-footer { display: none !important; }
-        .cl-footerPages { display: none !important; }
+        /* Footer "Belum punya akun? Daftar" */
+        .cl-footer { display: block !important; }
+        .cl-footerPages { display: block !important; }
+        .cl-footerAction { text-align: center !important; margin-top: 16px !important; }
+        .cl-footerActionText { color: var(--text2) !important; font-family:'Space Grotesk',sans-serif !important; font-size: 0.88rem !important; }
+        .cl-footerActionLink { color: var(--neon) !important; font-weight: 600 !important; text-decoration: none !important; }
+        .cl-footerActionLink:hover { text-decoration: underline !important; }
+        /* Sembunyikan hanya logo "Secured by Clerk" */
         [class*="cl-powered"] { display: none !important; }
         [class*="cl-branded"] { display: none !important; }
     </style>
@@ -178,10 +184,7 @@
                         fontSizeBase: '0.95rem',
                         spacingUnit: '1rem',
                     },
-                    elements: {
-                        footer: { display: 'none' },
-                        footerPages: { display: 'none' },
-                    }
+                    elements: {}
                 }
             });
         });
