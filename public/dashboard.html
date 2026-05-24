@@ -6,6 +6,11 @@
     <title>Dashboard — Zeno Store</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <!-- Clerk JS -->
+    <script async crossorigin="anonymous"
+        src="https://real-liger-88.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+        data-clerk-publishable-key="pk_test_cmVhbC1saWdlci04OC5jbGVyay5hY2NvdW50cy5kZXYk">
+    </script>
     <style>
         .page-wrap { position:relative; z-index:1; padding:90px 16px 60px; max-width:860px; margin:0 auto; }
 
@@ -96,24 +101,40 @@
     </div>
 
     <script>
-        const user = JSON.parse(localStorage.getItem('zenoUser') || 'null');
-        if (!user) location.href = '/login';
-        document.getElementById('wName').textContent = user.username;
-
         function statusBadge(s) {
             return {pending:['badge-warning','Menunggu'],confirming:['badge-cyan','Dikonfirmasi'],paid:['badge-success','Selesai'],cancelled:['badge-error','Dibatalkan']}[s]||['badge-warning','Menunggu'];
         }
 
-        async function load() {
+        window.addEventListener('load', async () => {
+            await window.Clerk.load();
+
+            const clerkUser = window.Clerk.user;
+
+            // Kalau belum login → redirect ke login, stop loop
+            if (!clerkUser) {
+                location.href = '/login';
+                return;
+            }
+
+            // Ambil data user dari Clerk
+            const userId   = clerkUser.id;
+            const username = clerkUser.username || clerkUser.firstName || 'User';
+
+            document.getElementById('wName').textContent = username;
+
+            // Load orders
             try {
-                const [oRes, pRes] = await Promise.all([fetch('/api/orders/'+user.userId), fetch('/api/products')]);
-                const orders = (await oRes.json()).orders || [];
+                const [oRes, pRes] = await Promise.all([
+                    fetch('/api/orders/' + userId),
+                    fetch('/api/products')
+                ]);
+                const orders   = (await oRes.json()).orders  || [];
                 const products = (await pRes.json()).products || [];
                 const pMap = {};
                 products.forEach(p => pMap[p.id] = p);
 
-                document.getElementById('sTotal').textContent = orders.length;
-                document.getElementById('sPaid').textContent = orders.filter(o=>o.status==='paid').length;
+                document.getElementById('sTotal').textContent   = orders.length;
+                document.getElementById('sPaid').textContent    = orders.filter(o=>o.status==='paid').length;
                 document.getElementById('sPending').textContent = orders.filter(o=>o.status==='pending'||o.status==='confirming').length;
 
                 const list = document.getElementById('orderList');
@@ -130,11 +151,13 @@
                         '<div class="order-info"><div class="order-name">' + o.productName + '</div><div class="order-meta">' + date + ' &nbsp;·&nbsp; <span class="badge ' + bc + '">' + bl + '</span></div></div>' +
                         '<div class="order-right"><div class="order-price">' + o.price + '</div></div></div>';
                 }).join('');
-            } catch { document.getElementById('orderList').innerHTML='<div class="empty-box"><div class="big">⚠️</div><p>Gagal memuat. Refresh halaman.</p></div>'; }
-        }
-        load();
+            } catch {
+                document.getElementById('orderList').innerHTML = '<div class="empty-box"><div class="big">⚠️</div><p>Gagal memuat. Refresh halaman.</p></div>';
+            }
+        });
     </script>
     <script src="/navbar.js"></script>
     <script>initNavbar('dashboard');</script>
+    <script src="/zenodialog.js"></script>
 </body>
 </html>
