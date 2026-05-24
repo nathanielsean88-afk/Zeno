@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produk — Zeno Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Clerk JS -->
+    <script async crossorigin="anonymous"
+        src="https://real-liger-88.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+        data-clerk-publishable-key="pk_test_cmVhbC1saWdlci04OC5jbGVyay5hY2NvdW50cy5kZXYk">
+    </script>
+    <style>
+        .page-hero { position:relative; z-index:1; padding:110px 20px 32px; text-align:center; }
+        .page-hero h1 { font-size:clamp(1.8rem,5vw,3rem); font-weight:700; letter-spacing:-1.5px; margin-bottom:8px; }
+        .page-hero p { color:var(--text2); font-size:0.9rem; max-width:400px; margin:0 auto; }
+
+        .filter-bar { position:relative; z-index:1; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; padding:0 16px 28px; }
+        .filter-btn { padding:8px 20px; border-radius:100px; font-family:'Space Grotesk',sans-serif; font-size:0.8rem; font-weight:600; cursor:pointer; transition:all 0.2s; border:1px solid var(--border2); background:transparent; color:var(--text2); }
+        .filter-btn:hover { border-color:var(--neon); color:var(--text); background:rgba(10,36,99,0.25); }
+        .filter-btn.active { background:rgba(10,36,99,0.55); border-color:rgba(0,180,255,0.4); color:var(--text); font-weight:700; }
+
+        .products-wrap { position:relative; z-index:1; max-width:860px; margin:0 auto; padding:0 16px 60px; }
+        .products-grid { display:flex; flex-direction:column; gap:12px; }
+
+        .products-meta { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; gap:10px; }
+        .products-count { font-size:0.78rem; color:var(--muted); font-weight:500; }
+        .products-count span { color:var(--neon); font-weight:700; }
+
+        .sort-wrap { position:relative; }
+        .sort-trigger { display:flex; align-items:center; gap:8px; padding:7px 14px; background:var(--bg3); border:1px solid var(--border2); border-radius:10px; color:var(--text2); font-family:'Space Grotesk',sans-serif; font-size:0.78rem; font-weight:600; cursor:pointer; transition:all 0.2s; user-select:none; white-space:nowrap; }
+        .sort-trigger:hover { border-color:var(--neon); color:var(--neon); }
+        .sort-trigger.open { border-color:var(--neon); color:var(--neon); box-shadow:0 0 12px rgba(0,180,255,0.15); }
+        .sort-trigger svg { transition:transform 0.2s; flex-shrink:0; }
+        .sort-trigger.open svg { transform:rotate(180deg); }
+
+        .sort-dropdown { position:absolute; top:calc(100% + 8px); right:0; min-width:200px; background:linear-gradient(145deg,#0c1624,#080f1c); border:1px solid rgba(0,180,255,0.2); border-radius:14px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,0.7),0 0 0 1px rgba(0,180,255,0.06); z-index:100; opacity:0; transform:translateY(-8px) scale(0.97); pointer-events:none; transition:opacity 0.18s ease,transform 0.18s ease; }
+        .sort-dropdown::before { content:''; position:absolute; top:0; left:10%; right:10%; height:1px; background:linear-gradient(90deg,transparent,var(--neon),transparent); opacity:0.5; }
+        .sort-dropdown.open { opacity:1; transform:translateY(0) scale(1); pointer-events:all; }
+
+        .sort-option { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; font-family:'Space Grotesk',sans-serif; font-size:0.85rem; font-weight:500; color:var(--text2); cursor:pointer; transition:all 0.15s; border-bottom:1px solid rgba(0,180,255,0.06); }
+        .sort-option:last-child { border-bottom:none; }
+        .sort-option:hover { background:rgba(0,180,255,0.07); color:var(--text); }
+        .sort-option.selected { color:var(--neon); background:rgba(0,180,255,0.08); }
+        .sort-option .radio-dot { width:16px; height:16px; border-radius:50%; border:2px solid rgba(0,180,255,0.3); display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.15s; }
+        .sort-option.selected .radio-dot { border-color:var(--neon); box-shadow:0 0 8px rgba(0,180,255,0.4); }
+        .sort-option.selected .radio-dot::after { content:''; width:7px; height:7px; background:var(--neon); border-radius:50%; box-shadow:0 0 6px rgba(0,180,255,0.6); }
+
+        .skeleton-row { display:flex; gap:0; height:110px; border-radius:16px; overflow:hidden; border:1px solid var(--border2); }
+        .skeleton-row .sk-img { width:110px; flex-shrink:0; }
+        .skeleton-row .sk-body { flex:1; padding:14px 16px; display:flex; flex-direction:column; gap:10px; }
+
+        footer { position:relative; z-index:1; text-align:center; padding:24px; border-top:1px solid var(--border2); color:var(--muted); font-size:0.8rem; }
+        .footer-logo { font-weight:700; background:var(--grad-neon); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+        @media(max-width:600px) { .skeleton-row { height:90px; } .skeleton-row .sk-img { width:90px; } }
+    </style>
+</head>
+<body>
+    <div class="bg-anim"><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div><div class="bg-orb bg-orb-3"></div></div>
+
+    <nav>
+        <a href="/" class="nav-logo">ZenoStore</a>
+        <ul class="nav-links">
+            <li><a href="/products" style="color:var(--neon)">Produk</a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
+        </ul>
+        <div class="nav-buttons" id="navButtons"></div>
+    </nav>
+
+    <div class="page-hero">
+        <div class="section-label">Katalog</div>
+        <h1>Semua <span style="background:var(--grad-neon);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Produk</span></h1>
+        <p>Plugin, Asset, Backup Server, dan Jasa Website untuk Minecraft kamu</p>
+    </div>
+
+    <div class="filter-bar">
+        <button class="filter-btn active" onclick="filter('all',this)">🗂 Semua</button>
+        <button class="filter-btn" onclick="filter('plugin',this)">🔌 Plugin</button>
+        <button class="filter-btn" onclick="filter('asset',this)">🎨 Asset</button>
+        <button class="filter-btn" onclick="filter('backup',this)">💾 Backup</button>
+        <button class="filter-btn" onclick="filter('jasa',this)">🌐 Jasa</button>
+    </div>
+
+    <div class="products-wrap">
+        <div class="products-meta">
+            <div class="products-count" id="productsCount">Memuat...</div>
+            <div class="sort-wrap" id="sortWrap">
+                <div class="sort-trigger" id="sortTrigger" onclick="toggleSort()">
+                    <span id="sortLabel">Urutan Default</span>
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="sort-dropdown" id="sortDropdown">
+                    <div class="sort-option selected" onclick="selectSort('default','Urutan Default',this)"><span>Urutan Default</span><div class="radio-dot"></div></div>
+                    <div class="sort-option" onclick="selectSort('price-asc','Harga: Terendah',this)"><span>Harga: Terendah</span><div class="radio-dot"></div></div>
+                    <div class="sort-option" onclick="selectSort('price-desc','Harga: Tertinggi',this)"><span>Harga: Tertinggi</span><div class="radio-dot"></div></div>
+                    <div class="sort-option" onclick="selectSort('name','Nama A-Z',this)"><span>Nama A-Z</span><div class="radio-dot"></div></div>
+                </div>
+            </div>
+        </div>
+        <div class="products-grid" id="productsGrid">
+            <div class="skeleton-row"><div class="skeleton sk-img"></div><div class="sk-body"><div class="skeleton" style="height:10px;width:40%"></div><div class="skeleton" style="height:14px;width:75%"></div><div class="skeleton" style="height:10px;width:55%"></div></div></div>
+            <div class="skeleton-row"><div class="skeleton sk-img"></div><div class="sk-body"><div class="skeleton" style="height:10px;width:35%"></div><div class="skeleton" style="height:14px;width:80%"></div><div class="skeleton" style="height:10px;width:50%"></div></div></div>
+            <div class="skeleton-row"><div class="skeleton sk-img"></div><div class="sk-body"><div class="skeleton" style="height:10px;width:45%"></div><div class="skeleton" style="height:14px;width:70%"></div><div class="skeleton" style="height:10px;width:60%"></div></div></div>
+            <div class="skeleton-row"><div class="skeleton sk-img"></div><div class="sk-body"><div class="skeleton" style="height:10px;width:38%"></div><div class="skeleton" style="height:14px;width:65%"></div><div class="skeleton" style="height:10px;width:48%"></div></div></div>
+        </div>
+    </div>
+
+    <footer><p>© 2024 <span class="footer-logo">ZenoStore</span> — All Rights Reserved</p></footer>
+
+    <script>
+        const catIcons = { plugin:'🔌', asset:'🎨', backup:'💾', jasa:'🌐' };
+        let allProducts = [];
+        let currentFilter = 'all';
+        let currentSort = 'default';
+        let clerkUser = null;
+
+        function toggleSort() {
+            document.getElementById('sortTrigger').classList.toggle('open');
+            document.getElementById('sortDropdown').classList.toggle('open');
+        }
+        function selectSort(val, label, el) {
+            currentSort = val;
+            document.getElementById('sortLabel').textContent = label;
+            document.querySelectorAll('.sort-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById('sortTrigger').classList.remove('open');
+            document.getElementById('sortDropdown').classList.remove('open');
+            const filtered = currentFilter === 'all' ? allProducts : allProducts.filter(p => p.cat === currentFilter);
+            renderSorted(filtered);
+        }
+        document.addEventListener('click', function(e) {
+            if (!document.getElementById('sortWrap').contains(e.target)) {
+                document.getElementById('sortTrigger').classList.remove('open');
+                document.getElementById('sortDropdown').classList.remove('open');
+            }
+        });
+
+        function renderProducts(list) {
+            const grid = document.getElementById('productsGrid');
+            const countEl = document.getElementById('productsCount');
+            countEl.innerHTML = `Menampilkan <span>${list.length}</span> produk`;
+            if (!list.length) { grid.innerHTML = '<div style="text-align:center;padding:60px 20px;color:var(--muted);font-size:0.9rem;">Tidak ada produk di kategori ini</div>'; return; }
+            grid.innerHTML = list.map(p => `
+                <div class="product-card" onclick="window.location='/checkout?id=${p.id}'">
+                    <div class="product-img-wrap">
+                        <img src="/${p.img}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                        <div class="product-img-fallback"><div class="fi">${catIcons[p.cat]||'📦'}</div><span>${p.catLabel}</span></div>
+                        ${p.badge ? `<div class="product-badge-pos"><span class="badge badge-purple">${p.badge}</span></div>` : ''}
+                    </div>
+                    <div class="product-body">
+                        <div>
+                            <div class="product-top"><span class="product-cat">${p.catLabel}</span></div>
+                            <div class="product-name">${p.name}</div>
+                            <div class="product-desc">${p.desc}</div>
+                        </div>
+                        <div class="product-footer">
+                            <div class="product-price">${p.price}</div>
+                            <a href="/checkout?id=${p.id}" class="btn-buy" onclick="return checkLogin(event)">Beli Sekarang</a>
+                        </div>
+                    </div>
+                </div>`).join('');
+        }
+
+        function renderSorted(list) {
+            let sorted = [...list];
+            if (currentSort === 'name') sorted.sort((a,b) => a.name.localeCompare(b.name));
+            else if (currentSort === 'price-asc') sorted.sort((a,b) => parseFloat(a.price.replace(/\D/g,'')) - parseFloat(b.price.replace(/\D/g,'')));
+            else if (currentSort === 'price-desc') sorted.sort((a,b) => parseFloat(b.price.replace(/\D/g,'')) - parseFloat(a.price.replace(/\D/g,'')));
+            renderProducts(sorted);
+        }
+
+        async function loadProducts() {
+            try {
+                const res = await fetch('/api/products');
+                const data = await res.json();
+                allProducts = data.products;
+                renderProducts(allProducts);
+            } catch {
+                document.getElementById('productsGrid').innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);">Gagal memuat. Refresh halaman.</div>';
+                document.getElementById('productsCount').textContent = '';
+            }
+        }
+
+        function filter(cat, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = cat;
+            const filtered = cat === 'all' ? allProducts : allProducts.filter(p => p.cat === cat);
+            renderSorted(filtered);
+        }
+
+        function checkLogin(e) {
+            e.stopPropagation();
+            if (!clerkUser) {
+                e.preventDefault();
+                zenoConfirm('Kamu harus login dulu. Mau login sekarang?', function(){ location.href='/login'; }, 'info', 'Login Diperlukan');
+                return false;
+            }
+            return true;
+        }
+
+        window.addEventListener('load', async () => {
+            await window.Clerk.load();
+            clerkUser = window.Clerk.user || null;
+            loadProducts();
+        });
+    </script>
+    <script src="/navbar.js"></script>
+    <script>window.addEventListener('load', () => initNavbar('products'));</script>
+    <script src="/zenodialog.js"></script>
+</body>
+</html>
