@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar — Zeno Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Clerk JS -->
+    <script async crossorigin="anonymous"
+        src="https://real-liger-88.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+        data-clerk-publishable-key="pk_test_cmVhbC1saWdlci04OC5jbGVyay5hY2NvdW50cy5kZXYk">
+    </script>
+    <style>
+        body { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
+        .wrap { position:relative; z-index:1; width:100%; max-width:420px; }
+        .back { display:inline-flex; align-items:center; gap:6px; color:var(--text2); text-decoration:none; font-size:0.82rem; font-weight:500; margin-bottom:28px; transition:color 0.2s; }
+        .back:hover { color:var(--purple2); }
+        .logo { font-weight:700; font-size:1.1rem; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:6px; }
+        .title { font-size:1.8rem; font-weight:700; letter-spacing:-1px; margin-bottom:4px; }
+        .sub { color:var(--text2); font-size:0.88rem; margin-bottom:28px; }
+        .bottom { text-align:center; font-size:0.88rem; color:var(--text2); }
+        .bottom a { color:var(--purple2); text-decoration:none; font-weight:600; }
+
+        /* Clerk component container */
+        #clerk-signup { width:100%; }
+        .cl-card { background: transparent !important; box-shadow: none !important; padding: 0 !important; }
+        .cl-headerTitle, .cl-headerSubtitle { display: none !important; }
+        .cl-rootBox { width: 100% !important; }
+        .cl-socialButtonsBlockButton {
+            background: var(--card) !important;
+            border: 1px solid var(--border2) !important;
+            color: var(--text) !important;
+            border-radius: 10px !important;
+        }
+        .cl-socialButtonsBlockButton:hover { border-color: var(--neon) !important; }
+        .cl-formFieldInput {
+            background: var(--bg3) !important;
+            border-color: var(--border2) !important;
+            color: var(--text) !important;
+            border-radius: 10px !important;
+        }
+        .cl-formButtonPrimary {
+            background: var(--grad-neon) !important;
+            border-radius: 10px !important;
+            box-shadow: 0 0 16px rgba(0,180,255,0.35) !important;
+        }
+        .cl-footerActionLink { color: var(--neon) !important; }
+        .cl-internal-b3fm6y { background: var(--bg2) !important; }
+    </style>
+</head>
+<body>
+    <div class="bg-anim"><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div></div>
+    <div class="wrap">
+        <a href="/" class="back">← Kembali</a>
+        <div class="card card-glow">
+            <div class="logo">ZenoStore</div>
+            <h1 class="title">Buat Akun</h1>
+            <p class="sub">Daftar gratis dan mulai belanja</p>
+            <!-- Clerk akan render form register di sini -->
+            <div id="clerk-signup"></div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('load', async () => {
+            await window.Clerk.load();
+
+            // Kalau sudah login, langsung redirect ke dashboard
+            if (window.Clerk.user) {
+                location.href = '/dashboard';
+                return;
+            }
+
+            window.Clerk.mountSignUp(document.getElementById('clerk-signup'), {
+                afterSignUpUrl: '/dashboard',
+                signInUrl: '/login',
+            });
+        });
+    </script>
+    <script src="/navbar.js"></script>
+    <script>initNavbar('register');</script>
+    <script src="/zenodialog.js"></script>
+</body>
+</html>
