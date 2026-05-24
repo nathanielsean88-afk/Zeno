@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Zeno Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .page-wrap { position:relative; z-index:1; padding:90px 16px 60px; max-width:860px; margin:0 auto; }
+
+        .welcome-wrap {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .welcome-wrap::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:var(--grad); }
+        .welcome-bg { position:absolute; top:-60px; right:-60px; width:200px; height:200px; background:radial-gradient(circle,rgba(139,92,246,0.12),transparent 70%); pointer-events:none; }
+        .welcome-label { font-size:0.72rem; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--purple2); margin-bottom:6px; }
+        .welcome-name { font-size:clamp(1.4rem,4vw,2rem); font-weight:700; letter-spacing:-0.5px; margin-bottom:4px; }
+        .welcome-sub { color:var(--text2); font-size:0.88rem; }
+
+        .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
+        .stat-card { background:var(--card); border:1px solid var(--border2); border-radius:14px; padding:18px; text-align:center; }
+        .stat-num { font-size:1.8rem; font-weight:700; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; display:block; }
+        .stat-lbl { font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; font-weight:600; margin-top:4px; }
+
+        .section-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+        .section-head h2 { font-size:1rem; font-weight:700; }
+        .section-head a { font-size:0.8rem; color:var(--purple2); text-decoration:none; font-weight:600; }
+
+        .quick-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; margin-bottom:20px; }
+        .quick-card { background:var(--card); border:1px solid var(--border2); border-radius:14px; padding:18px; text-align:center; cursor:pointer; transition:all 0.2s; text-decoration:none; display:block; color:inherit; }
+        .quick-card:hover { border-color:var(--border); transform:translateY(-2px); background:var(--card2); }
+        .quick-icon { font-size:1.5rem; margin-bottom:8px; display:block; }
+        .quick-label { font-size:0.78rem; font-weight:600; color:var(--text2); }
+
+        .order-list { display:flex; flex-direction:column; gap:10px; }
+        .order-item { background:var(--card); border:1px solid var(--border2); border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:12px; transition:border-color 0.2s; }
+        .order-item:hover { border-color:var(--border); }
+        .order-img { width:44px; height:44px; border-radius:8px; object-fit:cover; background:var(--bg3); flex-shrink:0; }
+        .order-info { flex:1; min-width:0; }
+        .order-name { font-weight:600; font-size:0.88rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:2px; }
+        .order-meta { font-size:0.72rem; color:var(--muted); }
+        .order-right { text-align:right; flex-shrink:0; }
+        .order-price { font-weight:700; font-size:0.88rem; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+        .empty-box { text-align:center; padding:40px 20px; background:var(--card); border:1px dashed var(--border2); border-radius:14px; color:var(--muted); }
+        .empty-box .big { font-size:2.5rem; margin-bottom:8px; }
+        .empty-box p { font-size:0.85rem; margin-bottom:14px; }
+
+        @media(max-width:480px) { .stats-grid { grid-template-columns:repeat(3,1fr); gap:8px; } .stat-card { padding:14px 10px; } .stat-num { font-size:1.4rem; } }
+    </style>
+</head>
+<body>
+    <div class="bg-anim"><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div></div>
+    <nav>
+        <a href="/" class="nav-logo">ZenoStore</a>
+        <ul class="nav-links"><li><a href="/products">Produk</a></li><li><a href="/orders">Pesanan</a></li></ul>
+        <div class="nav-buttons" id="navButtons"></div>
+    </nav>
+
+    <div class="page-wrap">
+        <div class="welcome-wrap">
+            <div class="welcome-bg"></div>
+            <div class="welcome-label">Dashboard</div>
+            <div class="welcome-name">Halo, <span id="wName" style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">User</span> 👋</div>
+            <div class="welcome-sub">Selamat datang di Zeno Store</div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card"><span class="stat-num" id="sTotal">0</span><div class="stat-lbl">Total</div></div>
+            <div class="stat-card"><span class="stat-num" id="sPaid" style="background:linear-gradient(135deg,#10b981,#06b6d4);-webkit-background-clip:text;background-clip:text;">0</span><div class="stat-lbl">Selesai</div></div>
+            <div class="stat-card"><span class="stat-num" id="sPending" style="background:linear-gradient(135deg,#f59e0b,#ec4899);-webkit-background-clip:text;background-clip:text;">0</span><div class="stat-lbl">Pending</div></div>
+        </div>
+
+        <div class="section-head"><h2>Aksi Cepat</h2></div>
+        <div class="quick-grid">
+            <a href="/products" class="quick-card"><span class="quick-icon">🛒</span><div class="quick-label">Beli Produk</div></a>
+            <a href="/orders" class="quick-card"><span class="quick-icon">📦</span><div class="quick-label">Pesanan</div></a>
+            <a href="https://wa.me/6282298673652" target="_blank" class="quick-card"><span class="quick-icon">💬</span><div class="quick-label">Support</div></a>
+            <a href="/" class="quick-card"><span class="quick-icon">🏠</span><div class="quick-label">Beranda</div></a>
+        </div>
+
+        <div class="section-head">
+            <h2>Pesanan Terbaru</h2>
+            <a href="/orders">Lihat Semua →</a>
+        </div>
+        <div class="order-list" id="orderList">
+            <div class="empty-box"><div class="big">⏳</div><p>Memuat...</p></div>
+        </div>
+    </div>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('zenoUser') || 'null');
+        if (!user) location.href = '/login';
+        document.getElementById('wName').textContent = user.username;
+
+        function statusBadge(s) {
+            return {pending:['badge-warning','Menunggu'],confirming:['badge-cyan','Dikonfirmasi'],paid:['badge-success','Selesai'],cancelled:['badge-error','Dibatalkan']}[s]||['badge-warning','Menunggu'];
+        }
+
+        async function load() {
+            try {
+                const [oRes, pRes] = await Promise.all([fetch('/api/orders/'+user.userId), fetch('/api/products')]);
+                const orders = (await oRes.json()).orders || [];
+                const products = (await pRes.json()).products || [];
+                const pMap = {};
+                products.forEach(p => pMap[p.id] = p);
+
+                document.getElementById('sTotal').textContent = orders.length;
+                document.getElementById('sPaid').textContent = orders.filter(o=>o.status==='paid').length;
+                document.getElementById('sPending').textContent = orders.filter(o=>o.status==='pending'||o.status==='confirming').length;
+
+                const list = document.getElementById('orderList');
+                if (!orders.length) {
+                    list.innerHTML = '<div class="empty-box"><div class="big">📭</div><p>Belum ada pesanan</p><a href="/products" class="btn btn-primary">Belanja Sekarang</a></div>';
+                    return;
+                }
+                list.innerHTML = orders.slice().reverse().slice(0,5).map(o => {
+                    const [bc,bl] = statusBadge(o.status);
+                    const prod = pMap[o.productId] || {};
+                    const date = new Date(o.createdAt).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
+                    return '<div class="order-item">' +
+                        '<img class="order-img" src="/' + (prod.img||'') + '" alt="' + o.productName + '" onerror="this.style.opacity=\'0.3\'">' +
+                        '<div class="order-info"><div class="order-name">' + o.productName + '</div><div class="order-meta">' + date + ' &nbsp;·&nbsp; <span class="badge ' + bc + '">' + bl + '</span></div></div>' +
+                        '<div class="order-right"><div class="order-price">' + o.price + '</div></div></div>';
+                }).join('');
+            } catch { document.getElementById('orderList').innerHTML='<div class="empty-box"><div class="big">⚠️</div><p>Gagal memuat. Refresh halaman.</p></div>'; }
+        }
+        load();
+    </script>
+    <script src="/navbar.js"></script>
+    <script>initNavbar('dashboard');</script>
+</body>
+</html>
