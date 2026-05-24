@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produk — Zeno Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .page-hero { position:relative; z-index:1; padding:110px 20px 32px; text-align:center; }
+        .page-hero h1 { font-size:clamp(1.8rem,5vw,3rem); font-weight:700; letter-spacing:-1.5px; margin-bottom:8px; }
+        .page-hero p { color:var(--text2); font-size:0.9rem; max-width:400px; margin:0 auto; }
+
+        /* Filter bar */
+        .filter-bar { position:relative; z-index:1; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; padding:0 16px 28px; }
+        .filter-btn { padding:8px 20px; border-radius:100px; font-family:'Space Grotesk',sans-serif; font-size:0.8rem; font-weight:600; cursor:pointer; transition:all 0.2s; border:1px solid var(--border2); background:transparent; color:var(--text2); }
+        .filter-btn.active, .filter-btn:hover { background:rgba(34,197,94,0.15); border-color:var(--blue); color:var(--blue2); }
+
+        /* Products list layout */
+        .products-wrap { position:relative; z-index:1; max-width:860px; margin:0 auto; padding:0 16px 60px; }
+        .products-grid { display:flex; flex-direction:column; gap:12px; }
+
+        /* Count info */
+        .products-meta { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+        .products-count { font-size:0.78rem; color:var(--muted); font-weight:500; }
+        .products-count span { color:var(--blue2); font-weight:700; }
+
+        /* Sort dropdown */
+        .sort-select { padding:6px 12px; background:var(--bg3); border:1px solid var(--border2); border-radius:8px; color:var(--text2); font-family:'Space Grotesk',sans-serif; font-size:0.78rem; cursor:pointer; outline:none; width:auto; }
+        .sort-select:focus { border-color:var(--blue); }
+
+        /* Skeleton rows */
+        .skeleton-row { display:flex; gap:0; height:110px; border-radius:16px; overflow:hidden; border:1px solid var(--border2); }
+        .skeleton-row .sk-img { width:110px; flex-shrink:0; }
+        .skeleton-row .sk-body { flex:1; padding:14px 16px; display:flex; flex-direction:column; gap:10px; }
+
+        footer { position:relative; z-index:1; text-align:center; padding:24px; border-top:1px solid var(--border2); color:var(--muted); font-size:0.8rem; }
+        .footer-logo { font-weight:700; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+        @media(max-width:600px) {
+            .skeleton-row { height:90px; }
+            .skeleton-row .sk-img { width:90px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-anim"><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div><div class="bg-orb bg-orb-3"></div></div>
+
+    <nav>
+        <a href="/" class="nav-logo">ZenoStore</a>
+        <ul class="nav-links">
+            <li><a href="/products" style="color:var(--blue2)">Produk</a></li>
+            <li><a href="/dashboard">Dashboard</a></li>
+        </ul>
+        <div class="nav-buttons" id="navButtons"></div>
+    </nav>
+
+    <div class="page-hero">
+        <div class="section-label">Katalog</div>
+        <h1>Semua <span style="background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Produk</span></h1>
+        <p>Plugin, Asset, Backup Server, dan Jasa Website untuk Minecraft kamu</p>
+    </div>
+
+    <div class="filter-bar">
+        <button class="filter-btn active" onclick="filter('all',this)">🗂 Semua</button>
+        <button class="filter-btn" onclick="filter('plugin',this)">🔌 Plugin</button>
+        <button class="filter-btn" onclick="filter('asset',this)">🎨 Asset</button>
+        <button class="filter-btn" onclick="filter('backup',this)">💾 Backup</button>
+        <button class="filter-btn" onclick="filter('jasa',this)">🌐 Jasa</button>
+    </div>
+
+    <div class="products-wrap">
+        <div class="products-meta">
+            <div class="products-count" id="productsCount">Memuat...</div>
+            <select class="sort-select" id="sortSelect" onchange="sortProducts(this.value)">
+                <option value="default">Urutan Default</option>
+                <option value="price-asc">Harga: Terendah</option>
+                <option value="price-desc">Harga: Tertinggi</option>
+                <option value="name">Nama A-Z</option>
+            </select>
+        </div>
+
+        <div class="products-grid" id="productsGrid">
+            <!-- Skeleton loading -->
+            <div class="skeleton-row"><div class="skeleton sk-img"></div><div class="sk-body"><div class="skeleton" style="height:10px;width:40%"></div><div class="skeleton" style="height:14px;width:75%"></div><div class="skeleton" style="height:10px;width:55%"></div></div></div>
+            <div class="skeleton-row"><div class="skeleton sk-img"></div><div class="sk-body"><div class="skeleton" style="height:10px;width:35%"></div><div class="skeleton" style="height:14px;width:80%"></div><div class="skeleton" style="height:10px;width:50%"></div></div></div>
+            <div class="skeleton-row"><div class="skeleton sk-img"></div><div class="sk-body"><div class="skeleton" style="height:10px;width:45%"></div><div class="skeleton" style="height:14px;width:70%"></div><div class="skeleton" style="height:10px;width:60%"></div></div></div>
+            <div class="skeleton-row"><div class="skeleton sk-img"></div><div class="sk-body"><div class="skeleton" style="height:10px;width:38%"></div><div class="skeleton" style="height:14px;width:65%"></div><div class="skeleton" style="height:10px;width:48%"></div></div></div>
+        </div>
+    </div>
+
+    <footer><p>© 2024 <span class="footer-logo">ZenoStore</span> — All Rights Reserved</p></footer>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem('zenoUser') || 'null');
+        const catIcons = { plugin:'🔌', asset:'🎨', backup:'💾', jasa:'🌐' };
+        let allProducts = [];
+        let currentFilter = 'all';
+
+        function renderProducts(list) {
+            const grid = document.getElementById('productsGrid');
+            const countEl = document.getElementById('productsCount');
+            countEl.innerHTML = `Menampilkan <span>${list.length}</span> produk`;
+
+            if (!list.length) {
+                grid.innerHTML = '<div style="text-align:center;padding:60px 20px;color:var(--muted);font-size:0.9rem;">Tidak ada produk di kategori ini</div>';
+                return;
+            }
+
+            grid.innerHTML = list.map(p => `
+                <div class="product-card" onclick="window.location='/checkout?id=${p.id}'">
+                    <div class="product-img-wrap">
+                        <img src="/${p.img}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                        <div class="product-img-fallback"><div class="fi">${catIcons[p.cat]||'📦'}</div><span>${p.catLabel}</span></div>
+                        ${p.badge ? `<div class="product-badge-pos"><span class="badge badge-purple">${p.badge}</span></div>` : ''}
+                    </div>
+                    <div class="product-body">
+                        <div>
+                            <div class="product-top">
+                                <span class="product-cat">${p.catLabel}</span>
+                            </div>
+                            <div class="product-name">${p.name}</div>
+                            <div class="product-desc">${p.desc}</div>
+                        </div>
+                        <div class="product-footer">
+                            <div class="product-price">${p.price}</div>
+                            <a href="/checkout?id=${p.id}" class="btn-buy" onclick="return checkLogin(event)">Beli Sekarang</a>
+                        </div>
+                    </div>
+                </div>`).join('');
+        }
+
+        async function loadProducts() {
+            try {
+                const res = await fetch('/api/products');
+                const data = await res.json();
+                allProducts = data.products;
+                renderProducts(allProducts);
+            } catch {
+                document.getElementById('productsGrid').innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);">Gagal memuat. Refresh halaman.</div>';
+                document.getElementById('productsCount').textContent = '';
+            }
+        }
+
+        function filter(cat, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = cat;
+            const filtered = cat === 'all' ? allProducts : allProducts.filter(p => p.cat === cat);
+            sortAndRender(filtered);
+        }
+
+        function sortProducts(val) {
+            const filtered = currentFilter === 'all' ? allProducts : allProducts.filter(p => p.cat === currentFilter);
+            sortAndRender(filtered, val);
+        }
+
+        function sortAndRender(list, val) {
+            val = val || document.getElementById('sortSelect').value;
+            let sorted = [...list];
+            if (val === 'name') sorted.sort((a, b) => a.name.localeCompare(b.name));
+            renderProducts(sorted);
+        }
+
+        function checkLogin(e) {
+            e.stopPropagation();
+            if (!user) { e.preventDefault(); zenoConfirm('Kamu harus login dulu. Mau login sekarang?', function(){ location.href='/login'; }, 'info', 'Login Diperlukan'); return false; }
+            return true;
+        }
+
+        loadProducts();
+    </script>
+    <script src="/navbar.js"></script>
+    <script>initNavbar('products');</script>
+    <script src="/zenodialog.js"></script>
+</body>
+</html>
