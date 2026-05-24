@@ -11,93 +11,131 @@
         data-clerk-publishable-key="pk_test_cmVhbC1saWdlci04OC5jbGVyay5hY2NvdW50cy5kZXYk">
     </script>
     <style>
-        body { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
-        .wrap { position:relative; z-index:1; width:100%; max-width:420px; }
+        body { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:16px; }
+        .wrap { position:relative; z-index:1; width:100%; max-width:440px; }
 
         .back { display:inline-flex; align-items:center; gap:6px; color:var(--text2); text-decoration:none;
-                font-size:0.82rem; font-weight:500; margin-bottom:24px; transition:color 0.2s; }
+                font-size:0.82rem; font-weight:500; margin-bottom:20px; transition:color 0.2s; }
         .back:hover { color:var(--neon); }
 
-        .card-header { text-align:center; margin-bottom:28px; }
-        .zn-logo { display:inline-flex; align-items:center; gap:8px; margin-bottom:12px; }
-        .zn-logo-icon { width:38px; height:38px; background:var(--grad-neon);
+        .card-header { text-align:center; margin-bottom:24px; }
+        .zn-logo { display:inline-flex; align-items:center; gap:10px; margin-bottom:14px; }
+        .zn-logo-icon { width:40px; height:40px; background:var(--grad-neon);
                         border-radius:10px; display:flex; align-items:center; justify-content:center;
-                        font-size:1.1rem; font-weight:800; color:#000; box-shadow:0 0 18px rgba(0,180,255,0.4); }
-        .zn-logo-text { font-size:1.2rem; font-weight:700;
+                        font-size:1.2rem; font-weight:800; color:#000; box-shadow:0 0 18px rgba(0,180,255,0.4); }
+        .zn-logo-text { font-size:1.25rem; font-weight:700;
                         background:var(--grad-neon); -webkit-background-clip:text;
                         -webkit-text-fill-color:transparent; background-clip:text; }
         .card-title { font-size:1.75rem; font-weight:700; letter-spacing:-0.5px; margin-bottom:4px; }
         .card-sub   { color:var(--text2); font-size:0.88rem; }
 
-        #clerk-signup { width:100%; }
+        #clerk-signup {
+            width: 100% !important;
+            overflow: visible !important;
+            box-sizing: border-box;
+        }
+        #clerk-signup * { box-sizing: border-box !important; }
 
-        .cl-rootBox          { width:100% !important; }
-        .cl-card             { background:transparent !important; box-shadow:none !important;
-                               padding:0 !important; border:none !important; }
-        .cl-headerTitle,
-        .cl-headerSubtitle,
-        .cl-header           { display:none !important; }
+        .cl-rootBox {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: visible !important;
+        }
+        .cl-card {
+            width: 100% !important;
+            max-width: 100% !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            border: none !important;
+            overflow: visible !important;
+        }
+        .cl-cardBox { width: 100% !important; max-width: 100% !important; }
+        .cl-main { width: 100% !important; padding: 0 !important; }
+        .cl-headerTitle, .cl-headerSubtitle, .cl-header { display: none !important; }
+
+        /* First name + Last name → susun vertikal full width */
+        .cl-formFieldRow {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 0 !important;
+            width: 100% !important;
+        }
+        .cl-formFieldRow .cl-formField { width: 100% !important; }
 
         .cl-socialButtonsBlockButton {
+            width: 100% !important;
             background: rgba(255,255,255,0.04) !important;
             border: 1px solid rgba(0,180,255,0.25) !important;
             color: var(--text) !important;
             border-radius: 12px !important;
             font-family: 'Space Grotesk', sans-serif !important;
             font-weight: 500 !important;
-            height: 46px !important;
-            transition: border-color 0.2s, background 0.2s !important;
+            height: 48px !important;
         }
         .cl-socialButtonsBlockButton:hover {
             background: rgba(0,180,255,0.08) !important;
             border-color: var(--neon) !important;
         }
 
+        .cl-formField,
+        .cl-formFieldRow { width: 100% !important; }
         .cl-formFieldInput {
-            background: rgba(255,255,255,0.04) !important;
+            width: 100% !important;
+            background: rgba(255,255,255,0.05) !important;
             border: 1px solid rgba(0,180,255,0.2) !important;
             color: var(--text) !important;
             border-radius: 12px !important;
             font-family: 'Space Grotesk', sans-serif !important;
-            height: 46px !important;
+            height: 48px !important;
+            padding: 0 14px !important;
+            font-size: 0.95rem !important;
         }
         .cl-formFieldInput:focus {
             border-color: var(--neon) !important;
             box-shadow: 0 0 0 3px rgba(0,180,255,0.12) !important;
+            outline: none !important;
         }
-        .cl-formFieldLabel { color: var(--text2) !important; font-family:'Space Grotesk',sans-serif !important; }
+        .cl-formFieldLabel {
+            color: var(--text2) !important;
+            font-family: 'Space Grotesk', sans-serif !important;
+            font-size: 0.85rem !important;
+        }
+        .cl-formFieldHintText { color: #3a5a7a !important; font-size: 0.72rem !important; }
 
         .cl-formButtonPrimary {
+            width: 100% !important;
             background: linear-gradient(135deg,#00b4ff,#00d4ff) !important;
             border-radius: 12px !important;
             box-shadow: 0 0 20px rgba(0,180,255,0.4) !important;
             font-family: 'Space Grotesk', sans-serif !important;
             font-weight: 600 !important;
-            height: 46px !important;
+            height: 48px !important;
             color: #000 !important;
-            transition: opacity 0.2s, box-shadow 0.2s !important;
+            font-size: 0.95rem !important;
+            letter-spacing: 0.5px !important;
         }
-        .cl-formButtonPrimary:hover { opacity:0.9 !important; box-shadow:0 0 28px rgba(0,180,255,0.55) !important; }
+        .cl-formButtonPrimary:hover {
+            opacity: 0.9 !important;
+            box-shadow: 0 0 28px rgba(0,180,255,0.55) !important;
+        }
 
         .cl-dividerLine { background: rgba(0,180,255,0.15) !important; }
         .cl-dividerText { color: var(--text2) !important; font-family:'Space Grotesk',sans-serif !important; }
-
         .cl-footerActionText { color: var(--text2) !important; font-family:'Space Grotesk',sans-serif !important; }
         .cl-footerActionLink { color: var(--neon) !important; font-weight:600 !important; }
 
-        /* Sembunyikan "Secured by Clerk" */
-        .cl-footer,
-        .cl-footerPages,
-        [data-localization-key="footerPageLink__privacy"],
-        [data-localization-key="footerPageLink__terms"],
-        .cl-internal-b3fm6y { display:none !important; }
+        .cl-footer { display: none !important; }
+        .cl-footerPages { display: none !important; }
+        [class*="cl-powered"] { display: none !important; }
+        [class*="cl-branded"] { display: none !important; }
     </style>
 </head>
 <body>
     <div class="bg-anim"><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div></div>
     <div class="wrap">
         <a href="/" class="back">← Kembali</a>
-        <div class="card card-glow">
+        <div class="card card-glow" style="overflow:visible; width:100%;">
             <div class="card-header">
                 <div class="zn-logo">
                     <div class="zn-logo-icon">Z</div>
@@ -123,16 +161,18 @@
                         colorBackground: 'transparent',
                         colorText: '#e8f4ff',
                         colorTextSecondary: '#6a9cc0',
-                        colorInputBackground: 'rgba(255,255,255,0.04)',
+                        colorInputBackground: 'rgba(255,255,255,0.05)',
                         colorInputText: '#e8f4ff',
                         borderRadius: '12px',
                         fontFamily: "'Space Grotesk', sans-serif",
+                        fontSizeSm: '0.85rem',
+                        fontSizeBase: '0.95rem',
+                        spacingUnit: '1rem',
                     },
                     elements: {
-                        footer: 'hidden',
-                        footerAction: 'hidden',
-                        footerActionLink: 'hidden',
-                        footerPages: 'hidden',
+                        footer: { display: 'none' },
+                        footerPages: { display: 'none' },
+                        formFieldRow: { flexDirection: 'column', width: '100%' },
                     }
                 }
             });
