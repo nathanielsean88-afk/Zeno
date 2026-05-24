@@ -6,7 +6,6 @@
     <title>Daftar — Zeno Store</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <!-- Clerk JS -->
     <script async crossorigin="anonymous"
         src="https://real-liger-88.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
         data-clerk-publishable-key="pk_test_cmVhbC1saWdlci04OC5jbGVyay5hY2NvdW50cy5kZXYk">
@@ -14,39 +13,84 @@
     <style>
         body { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
         .wrap { position:relative; z-index:1; width:100%; max-width:420px; }
-        .back { display:inline-flex; align-items:center; gap:6px; color:var(--text2); text-decoration:none; font-size:0.82rem; font-weight:500; margin-bottom:28px; transition:color 0.2s; }
-        .back:hover { color:var(--purple2); }
-        .logo { font-weight:700; font-size:1.1rem; background:var(--grad); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:6px; }
-        .title { font-size:1.8rem; font-weight:700; letter-spacing:-1px; margin-bottom:4px; }
-        .sub { color:var(--text2); font-size:0.88rem; margin-bottom:28px; }
-        .bottom { text-align:center; font-size:0.88rem; color:var(--text2); }
-        .bottom a { color:var(--purple2); text-decoration:none; font-weight:600; }
 
-        /* Clerk component container */
+        .back { display:inline-flex; align-items:center; gap:6px; color:var(--text2); text-decoration:none;
+                font-size:0.82rem; font-weight:500; margin-bottom:24px; transition:color 0.2s; }
+        .back:hover { color:var(--neon); }
+
+        .card-header { text-align:center; margin-bottom:28px; }
+        .zn-logo { display:inline-flex; align-items:center; gap:8px; margin-bottom:12px; }
+        .zn-logo-icon { width:38px; height:38px; background:var(--grad-neon);
+                        border-radius:10px; display:flex; align-items:center; justify-content:center;
+                        font-size:1.1rem; font-weight:800; color:#000; box-shadow:0 0 18px rgba(0,180,255,0.4); }
+        .zn-logo-text { font-size:1.2rem; font-weight:700;
+                        background:var(--grad-neon); -webkit-background-clip:text;
+                        -webkit-text-fill-color:transparent; background-clip:text; }
+        .card-title { font-size:1.75rem; font-weight:700; letter-spacing:-0.5px; margin-bottom:4px; }
+        .card-sub   { color:var(--text2); font-size:0.88rem; }
+
         #clerk-signup { width:100%; }
-        .cl-card { background: transparent !important; box-shadow: none !important; padding: 0 !important; }
-        .cl-headerTitle, .cl-headerSubtitle { display: none !important; }
-        .cl-rootBox { width: 100% !important; }
+
+        .cl-rootBox          { width:100% !important; }
+        .cl-card             { background:transparent !important; box-shadow:none !important;
+                               padding:0 !important; border:none !important; }
+        .cl-headerTitle,
+        .cl-headerSubtitle,
+        .cl-header           { display:none !important; }
+
         .cl-socialButtonsBlockButton {
-            background: var(--card) !important;
-            border: 1px solid var(--border2) !important;
+            background: rgba(255,255,255,0.04) !important;
+            border: 1px solid rgba(0,180,255,0.25) !important;
             color: var(--text) !important;
-            border-radius: 10px !important;
+            border-radius: 12px !important;
+            font-family: 'Space Grotesk', sans-serif !important;
+            font-weight: 500 !important;
+            height: 46px !important;
+            transition: border-color 0.2s, background 0.2s !important;
         }
-        .cl-socialButtonsBlockButton:hover { border-color: var(--neon) !important; }
+        .cl-socialButtonsBlockButton:hover {
+            background: rgba(0,180,255,0.08) !important;
+            border-color: var(--neon) !important;
+        }
+
         .cl-formFieldInput {
-            background: var(--bg3) !important;
-            border-color: var(--border2) !important;
+            background: rgba(255,255,255,0.04) !important;
+            border: 1px solid rgba(0,180,255,0.2) !important;
             color: var(--text) !important;
-            border-radius: 10px !important;
+            border-radius: 12px !important;
+            font-family: 'Space Grotesk', sans-serif !important;
+            height: 46px !important;
         }
+        .cl-formFieldInput:focus {
+            border-color: var(--neon) !important;
+            box-shadow: 0 0 0 3px rgba(0,180,255,0.12) !important;
+        }
+        .cl-formFieldLabel { color: var(--text2) !important; font-family:'Space Grotesk',sans-serif !important; }
+
         .cl-formButtonPrimary {
-            background: var(--grad-neon) !important;
-            border-radius: 10px !important;
-            box-shadow: 0 0 16px rgba(0,180,255,0.35) !important;
+            background: linear-gradient(135deg,#00b4ff,#00d4ff) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 0 20px rgba(0,180,255,0.4) !important;
+            font-family: 'Space Grotesk', sans-serif !important;
+            font-weight: 600 !important;
+            height: 46px !important;
+            color: #000 !important;
+            transition: opacity 0.2s, box-shadow 0.2s !important;
         }
-        .cl-footerActionLink { color: var(--neon) !important; }
-        .cl-internal-b3fm6y { background: var(--bg2) !important; }
+        .cl-formButtonPrimary:hover { opacity:0.9 !important; box-shadow:0 0 28px rgba(0,180,255,0.55) !important; }
+
+        .cl-dividerLine { background: rgba(0,180,255,0.15) !important; }
+        .cl-dividerText { color: var(--text2) !important; font-family:'Space Grotesk',sans-serif !important; }
+
+        .cl-footerActionText { color: var(--text2) !important; font-family:'Space Grotesk',sans-serif !important; }
+        .cl-footerActionLink { color: var(--neon) !important; font-weight:600 !important; }
+
+        /* Sembunyikan "Secured by Clerk" */
+        .cl-footer,
+        .cl-footerPages,
+        [data-localization-key="footerPageLink__privacy"],
+        [data-localization-key="footerPageLink__terms"],
+        .cl-internal-b3fm6y { display:none !important; }
     </style>
 </head>
 <body>
@@ -54,10 +98,14 @@
     <div class="wrap">
         <a href="/" class="back">← Kembali</a>
         <div class="card card-glow">
-            <div class="logo">ZenoStore</div>
-            <h1 class="title">Buat Akun</h1>
-            <p class="sub">Daftar gratis dan mulai belanja</p>
-            <!-- Clerk akan render form register di sini -->
+            <div class="card-header">
+                <div class="zn-logo">
+                    <div class="zn-logo-icon">Z</div>
+                    <div class="zn-logo-text">ZenoStore</div>
+                </div>
+                <h1 class="card-title">Buat Akun</h1>
+                <p class="card-sub">Daftar gratis dan mulai belanja</p>
+            </div>
             <div id="clerk-signup"></div>
         </div>
     </div>
@@ -65,16 +113,26 @@
     <script>
         window.addEventListener('load', async () => {
             await window.Clerk.load();
-
-            // Kalau sudah login, langsung redirect ke dashboard
-            if (window.Clerk.user) {
-                location.href = '/dashboard';
-                return;
-            }
-
+            if (window.Clerk.user) { location.href = '/dashboard'; return; }
             window.Clerk.mountSignUp(document.getElementById('clerk-signup'), {
                 afterSignUpUrl: '/dashboard',
                 signInUrl: '/login',
+                appearance: {
+                    variables: {
+                        colorPrimary: '#00b4ff',
+                        colorBackground: 'transparent',
+                        colorText: '#e8f4ff',
+                        colorTextSecondary: '#6a9cc0',
+                        colorInputBackground: 'rgba(255,255,255,0.04)',
+                        colorInputText: '#e8f4ff',
+                        borderRadius: '12px',
+                        fontFamily: "'Space Grotesk', sans-serif",
+                    },
+                    elements: {
+                        footer: { display: 'none' },
+                        footerAction: { display: 'none' },
+                    }
+                }
             });
         });
     </script>
