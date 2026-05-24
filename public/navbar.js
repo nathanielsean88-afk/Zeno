@@ -1,5 +1,13 @@
-function initNavbar(activePage) {
-    const user = JSON.parse(localStorage.getItem('zenoUser') || 'null');
+// navbar.js — Clerk Auth version
+
+async function initNavbar(activePage) {
+    // Load Clerk dulu sebelum cek user
+    if (window.Clerk) await window.Clerk.load();
+
+    const clerkUser = window.Clerk?.user || null;
+    const username  = clerkUser ? (clerkUser.username || clerkUser.firstName || 'User') : null;
+    const email     = clerkUser ? (clerkUser.primaryEmailAddress?.emailAddress || '') : null;
+
     const nav = document.querySelector('nav');
     if (!nav) return;
 
@@ -13,13 +21,13 @@ function initNavbar(activePage) {
     mobileMenu.className = 'mobile-menu';
     mobileMenu.id = 'mobileMenu';
 
-    if (user) {
+    if (clerkUser) {
         mobileMenu.innerHTML = `
             <div class="mobile-user-info">
-                <div class="mobile-avatar">${user.username.charAt(0).toUpperCase()}</div>
+                <div class="mobile-avatar">${username.charAt(0).toUpperCase()}</div>
                 <div>
-                    <div class="mobile-user-name">${user.username}</div>
-                    <div class="mobile-user-email">${user.email || 'Pengguna Zeno Store'}</div>
+                    <div class="mobile-user-name">${username}</div>
+                    <div class="mobile-user-email">${email || 'Pengguna Zeno Store'}</div>
                 </div>
             </div>
             <a href="/" class="mobile-nav-item ${activePage==='home'?'active':''}">
@@ -73,9 +81,9 @@ function initNavbar(activePage) {
 
     const navButtons = document.getElementById('navButtons');
     if (navButtons) {
-        if (user) {
+        if (clerkUser) {
             navButtons.innerHTML =
-                '<span class="nav-user">' + user.username + '</span>' +
+                '<span class="nav-user">' + username + '</span>' +
                 '<a href="/dashboard" class="btn-sm btn-grad">Dashboard</a>' +
                 '<button class="btn-sm btn-ghost" onclick="logoutUser()">Logout</button>';
         } else {
@@ -86,7 +94,7 @@ function initNavbar(activePage) {
     }
 }
 
-function logoutUser() {
-    localStorage.removeItem('zenoUser');
+async function logoutUser() {
+    if (window.Clerk) await window.Clerk.signOut();
     window.location.href = '/';
 }
