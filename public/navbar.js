@@ -1,8 +1,18 @@
 // navbar.js — Clerk Auth version
 
 async function initNavbar(activePage) {
-    // Load Clerk dulu sebelum cek user
-    if (window.Clerk) await window.Clerk.load();
+    // Tunggu Clerk benar-benar load dan session siap
+    if (window.Clerk) {
+        await window.Clerk.load();
+    } else {
+        // Kalau Clerk belum tersedia, tunggu event loaded
+        await new Promise(resolve => {
+            if (window.Clerk) return resolve();
+            window.addEventListener('clerk:loaded', resolve, { once: true });
+            setTimeout(resolve, 3000); // fallback timeout 3 detik
+        });
+        if (window.Clerk) await window.Clerk.load();
+    }
 
     const clerkUser = window.Clerk?.user || null;
     const username  = clerkUser ? (clerkUser.username || clerkUser.firstName || 'User') : null;
