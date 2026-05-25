@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Zeno Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script async crossorigin="anonymous"
+        src="https://real-liger-88.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+        data-clerk-publishable-key="pk_test_cmVhbC1saWdlci04OC5jbGVyay5hY2NvdW50cy5kZXYk">
+    </script>
+    <style>
+        .page-wrap {
+            position: relative;
+            z-index: 1;
+            padding: 96px 18px 64px;
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        /* Welcome card */
+        .welcome-wrap {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 28px 30px;
+            margin-bottom: 18px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+        }
+        .welcome-wrap::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--green), transparent);
+        }
+        .welcome-leaf {
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, rgba(175,200,173,0.18), transparent 70%);
+            pointer-events: none;
+        }
+        .welcome-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--green-deep);
+            margin-bottom: 5px;
+            opacity: 0.8;
+        }
+        .welcome-name {
+            font-family: 'DM Serif Display', serif;
+            font-size: clamp(1.5rem, 4vw, 2.1rem);
+            font-weight: 400;
+            letter-spacing: -0.3px;
+            margin-bottom: 4px;
+            color: var(--text);
+        }
+        .welcome-name .name-accent { color: var(--green-deep); font-style: italic; }
+        .welcome-sub { color: var(--text2); font-size: 0.875rem; }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border2);
+            border-radius: 16px;
+            padding: 20px 16px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .stat-num {
+            font-family: 'Lora', serif;
+            font-size: 1.9rem;
+            font-weight: 600;
+            color: var(--green-deep);
+            display: block;
+        }
+        .stat-num.done { color: var(--success); }
+        .stat-num.pending { color: var(--warning); }
+        .stat-lbl {
+            font-size: 0.68rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        /* Section head */
+        .section-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+        .section-head h2 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .section-head a {
+            font-size: 0.8rem;
+            color: var(--green-deep);
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+        .section-head a:hover { opacity: 0.75; }
+
+        /* Quick grid */
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+        .quick-card {
+            background: var(--card);
+            border: 1px solid var(--border2);
+            border-radius: 16px;
+            padding: 20px 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.22s;
+            text-decoration: none;
+            display: block;
+            color: inherit;
+            box-shadow: var(--shadow-sm);
+        }
+        .quick-card:hover {
+            border-color: var(--border);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            background: var(--card2);
+        }
+        .quick-icon { font-size: 1.5rem; margin-bottom: 8px; display: block; }
+        .quick-label { font-size: 0.78rem; font-weight: 500; color: var(--text2); }
+
+        /* Order list */
+        .order-list { display: flex; flex-direction: column; gap: 10px; }
+        .order-item {
+            background: var(--card);
+            border: 1px solid var(--border2);
+            border-radius: 14px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-shadow: var(--shadow-sm);
+        }
+        .order-item:hover { border-color: var(--border); box-shadow: var(--shadow-md); }
+        .order-img {
+            width: 46px;
+            height: 46px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: var(--bg3);
+            flex-shrink: 0;
+        }
+        .order-info { flex: 1; min-width: 0; }
+        .order-name {
+            font-weight: 600;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 2px;
+            color: var(--text);
+        }
+        .order-meta { font-size: 0.72rem; color: var(--muted); }
+        .order-right { text-align: right; flex-shrink: 0; }
+        .order-price {
+            font-family: 'Lora', serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--green-deep);
+        }
+
+        .empty-box {
+            text-align: center;
+            padding: 44px 20px;
+            background: var(--card);
+            border: 1px dashed var(--border);
+            border-radius: 16px;
+            color: var(--muted);
+        }
+        .empty-box .big { font-size: 2.5rem; margin-bottom: 10px; }
+        .empty-box p { font-size: 0.85rem; margin-bottom: 16px; color: var(--text2); }
+
+        @media(max-width: 480px) {
+            .stats-grid { gap: 8px; }
+            .stat-card { padding: 16px 10px; }
+            .stat-num { font-size: 1.5rem; }
+            .page-wrap { padding: 86px 14px 48px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-anim"><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div></div>
+
+    <nav>
+        <a href="/" class="nav-logo">ZenoStore</a>
+        <ul class="nav-links">
+            <li><a href="/products">Produk</a></li>
+            <li><a href="/orders">Pesanan</a></li>
+        </ul>
+        <div class="nav-buttons" id="navButtons"></div>
+    </nav>
+
+    <div class="page-wrap">
+        <!-- Welcome -->
+        <div class="welcome-wrap">
+            <div class="welcome-leaf"></div>
+            <div class="welcome-label">Dashboard</div>
+            <div class="welcome-name">Halo, <span class="name-accent" id="wName">User</span> 👋</div>
+            <div class="welcome-sub">Selamat datang di Zeno Store</div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-num" id="sTotal">0</span>
+                <div class="stat-lbl">Total</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num done" id="sPaid">0</span>
+                <div class="stat-lbl">Selesai</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-num pending" id="sPending">0</span>
+                <div class="stat-lbl">Pending</div>
+            </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="section-head"><h2>Aksi Cepat</h2></div>
+        <div class="quick-grid">
+            <a href="/products" class="quick-card">
+                <span class="quick-icon">🛒</span>
+                <div class="quick-label">Beli Produk</div>
+            </a>
+            <a href="/orders" class="quick-card">
+                <span class="quick-icon">📦</span>
+                <div class="quick-label">Pesanan</div>
+            </a>
+            <a href="https://wa.me/6282298673652" target="_blank" class="quick-card">
+                <span class="quick-icon">💬</span>
+                <div class="quick-label">Support</div>
+            </a>
+            <a href="/" class="quick-card">
+                <span class="quick-icon">🏠</span>
+                <div class="quick-label">Beranda</div>
+            </a>
+        </div>
+
+        <!-- Recent orders -->
+        <div class="section-head">
+            <h2>Pesanan Terbaru</h2>
+            <a href="/orders">Lihat Semua →</a>
+        </div>
+        <div class="order-list" id="orderList">
+            <div class="empty-box"><div class="big">⏳</div><p>Memuat...</p></div>
+        </div>
+    </div>
+
+    <script>
+        function statusBadge(s) {
+            return {
+                pending:    ['badge-warning',  'Menunggu'],
+                confirming: ['badge-cyan',     'Dikonfirmasi'],
+                paid:       ['badge-success',  'Selesai'],
+                cancelled:  ['badge-error',    'Dibatalkan']
+            }[s] || ['badge-warning', 'Menunggu'];
+        }
+
+        window.addEventListener('load', async () => {
+            await window.Clerk.load();
+            const clerkUser = window.Clerk.user;
+
+            if (!clerkUser) { location.href = '/login'; return; }
+
+            const userId   = clerkUser.id;
+            const username = clerkUser.username || clerkUser.firstName || 'User';
+            document.getElementById('wName').textContent = username;
+
+            try {
+                const [oRes, pRes] = await Promise.all([
+                    fetch('/api/orders/' + userId),
+                    fetch('/api/products')
+                ]);
+                const orders   = (await oRes.json()).orders   || [];
+                const products = (await pRes.json()).products || [];
+                const pMap = {};
+                products.forEach(p => pMap[p.id] = p);
+
+                document.getElementById('sTotal').textContent   = orders.length;
+                document.getElementById('sPaid').textContent    = orders.filter(o => o.status === 'paid').length;
+                document.getElementById('sPending').textContent = orders.filter(o => o.status === 'pending' || o.status === 'confirming').length;
+
+                const list = document.getElementById('orderList');
+                if (!orders.length) {
+                    list.innerHTML = '<div class="empty-box"><div class="big">📭</div><p>Belum ada pesanan</p><a href="/products" class="btn btn-primary">Belanja Sekarang</a></div>';
+                    return;
+                }
+                list.innerHTML = orders.slice().reverse().slice(0, 5).map(o => {
+                    const [bc, bl] = statusBadge(o.status);
+                    const prod = pMap[o.productId] || {};
+                    const date = new Date(o.createdAt).toLocaleDateString('id-ID', { day:'numeric', month:'short', year:'numeric' });
+                    return `<div class="order-item">
+                        <img class="order-img" src="/${prod.img || ''}" alt="${o.productName}" onerror="this.style.opacity='0.3'">
+                        <div class="order-info">
+                            <div class="order-name">${o.productName}</div>
+                            <div class="order-meta">${date} &nbsp;·&nbsp; <span class="badge ${bc}">${bl}</span></div>
+                        </div>
+                        <div class="order-right"><div class="order-price">${o.price}</div></div>
+                    </div>`;
+                }).join('');
+            } catch {
+                document.getElementById('orderList').innerHTML = '<div class="empty-box"><div class="big">⚠️</div><p>Gagal memuat. Refresh halaman.</p></div>';
+            }
+        });
+    </script>
+    <script src="/navbar.js"></script>
+    <script>initNavbar('dashboard');</script>
+    <script src="/zenodialog.js"></script>
+</body>
+</html>
