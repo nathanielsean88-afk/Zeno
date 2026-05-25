@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout — Zeno Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Clerk JS -->
+    <script async crossorigin="anonymous"
+        src="https://real-liger-88.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+        data-clerk-publishable-key="pk_test_cmVhbC1saWdlci04OC5jbGVyay5hY2NvdW50cy5kZXYk">
+    </script>
+    <style>
+        .page-wrap { position:relative; z-index:1; padding:100px 16px 60px; max-width:620px; margin:0 auto; }
+        .page-title { font-size:clamp(1.4rem,4vw,1.8rem); font-weight:900; margin-bottom:20px; }
+
+        .product-preview-card { background:var(--card); border:1px solid var(--border2); border-radius:14px; overflow:hidden; margin-bottom:16px; }
+        .product-preview-img { width:100%; height:200px; object-fit:cover; display:block; background:var(--dark3); }
+        .product-preview-img-fallback { width:100%; height:200px; background:var(--dark3); display:none; align-items:center; justify-content:center; flex-direction:column; gap:8px; color:var(--muted); }
+        .product-preview-img-fallback .fi { font-size:3rem; }
+        .product-preview-body { padding:16px; }
+        .product-preview-cat { font-size:0.7rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--blue-bright); margin-bottom:4px; }
+        .product-preview-name { font-size:1.1rem; font-weight:900; color:var(--text); margin-bottom:6px; }
+        .product-preview-price { font-size:1.3rem; font-weight:900; color:var(--blue-bright); margin-bottom:12px; }
+
+        .product-desc-box { background:rgba(59,130,246,0.04); border:1px solid rgba(59,130,246,0.15); border-radius:10px; padding:14px; margin-top:2px; }
+        .product-desc-title { font-size:0.72rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+        .product-desc-text { font-size:0.85rem; color:var(--text2); line-height:1.7; }
+
+        .pay-info-box { background:rgba(59,130,246,0.06); border:1px solid rgba(59,130,246,0.2); border-radius:12px; padding:20px; margin-bottom:18px; }
+        .pay-info-box h4 { font-weight:800; margin-bottom:8px; color:var(--blue-bright); font-size:0.95rem; }
+        .pay-info-box p { font-size:0.82rem; color:var(--text2); line-height:1.6; }
+
+        .btn-pay { width:100%; padding:16px; background:var(--blue); color:#fff; border:none; border-radius:10px; font-family:'Space Grotesk',sans-serif; font-size:1rem; font-weight:800; cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:10px; letter-spacing:0.5px; }
+        .btn-pay:hover { background:var(--blue-bright); transform:translateY(-2px); box-shadow:0 8px 24px rgba(59,130,246,0.35); }
+        .btn-pay:disabled { opacity:0.6; cursor:not-allowed; transform:none; box-shadow:none; }
+
+        #successMsg { display:none; }
+        .success-card { background:var(--card); border:1px solid var(--border2); border-radius:14px; padding:32px 20px; text-align:center; }
+        .success-card .big { font-size:3rem; margin-bottom:12px; }
+        .success-card h2 { font-size:1.4rem; font-weight:900; margin-bottom:8px; }
+        .success-card p { color:var(--text2); font-size:0.85rem; margin-bottom:6px; line-height:1.6; }
+        .order-id-box { background:var(--dark3); border:1px solid var(--border2); border-radius:8px; padding:10px 16px; margin:14px 0; font-weight:800; color:var(--blue-bright); font-size:0.9rem; }
+        .btn-actions { display:flex; flex-direction:column; gap:10px; margin-top:20px; }
+    </style>
+</head>
+<body>
+    <div class="bg-anim"><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div></div>
+    <nav>
+        <a href="/" class="nav-logo">ZenoStore</a>
+        <ul class="nav-links"><li><a href="/products">Produk</a></li></ul>
+        <div class="nav-buttons" id="navButtons"></div>
+    </nav>
+
+    <div class="page-wrap">
+        <div id="checkoutForm">
+            <div class="section-tag">// Pembelian</div>
+            <h1 class="page-title">CHECKOUT</h1>
+
+            <div class="alert alert-error" id="alertError"></div>
+            <div class="alert alert-success" id="alertSuccess"></div>
+
+            <div class="product-preview-card">
+                <img id="productImg" class="product-preview-img" src="" alt=""
+                    onerror="this.style.display='none';document.getElementById('imgFallback').style.display='flex'">
+                <div class="product-preview-img-fallback" id="imgFallback">
+                    <div class="fi" id="productIcon">📦</div>
+                    <span id="productIconLabel">Produk</span>
+                </div>
+                <div class="product-preview-body">
+                    <div class="product-preview-cat" id="productCat">-</div>
+                    <div class="product-preview-name" id="productName">-</div>
+                    <div class="product-preview-price" id="productPrice">-</div>
+                    <div class="product-desc-box">
+                        <div class="product-desc-title">Keterangan Produk</div>
+                        <div class="product-desc-text" id="productDesc">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-top-line" style="margin-bottom:16px;">
+                <div class="pay-info-box">
+                    <h4>💳 Pembayaran Otomatis via Saya Bayar</h4>
+                    <p>Klik tombol di bawah untuk membuat link pembayaran. Kamu bisa bayar lewat QRIS, transfer bank, GoPay, OVO, Dana, dan lainnya — langsung di halaman Saya Bayar.</p>
+                </div>
+                <div class="pay-info-box" id="qrisInfo">
+                    <h4>Scan QRIS:</h4>
+                    <div class="qris-placeholder">
+                        <div style="font-size:2.5rem;margin-bottom:6px">🔲</div>
+                        <div style="font-weight:700;color:var(--text);margin-bottom:4px">QRIS Zeno Store</div>
+                        <div style="font-size:0.75rem;color:var(--muted)">Upload qris.png ke folder public/ lalu uncomment img di checkout.html</div>
+                    </div>
+                    <div class="qris-note">Bisa dipakai dari semua e-wallet & mobile banking</div>
+                </div>
+            </div>
+
+            <div class="steps">
+                <h3>Cara Pembayaran</h3>
+                <div class="step"><div class="step-num">1</div><div class="step-text">Transfer sesuai nominal harga produk</div></div>
+                <div class="step"><div class="step-num">2</div><div class="step-text">Screenshot bukti pembayaran</div></div>
+                <div class="step"><div class="step-num">3</div><div class="step-text">Upload screenshot di bawah</div></div>
+                <div class="step"><div class="step-num">4</div><div class="step-text">Klik "Kirim via WhatsApp" — bukti otomatis terkirim ke admin</div></div>
+                <div class="step"><div class="step-num">5</div><div class="step-text">Admin konfirmasi & link download aktif (maks 1x24 jam)</div></div>
+            </div>
+
+            <div class="card card-top-line" style="margin-bottom:16px;">
+                <h3 style="font-weight:800;margin-bottom:14px;font-size:0.95rem;">Upload Bukti Pembayaran</h3>
+                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            </div>
+
+            <button class="btn-pay" id="btnOrder" onclick="submitOrder()">
+                <span>💳</span> Bayar Sekarang
+            </button>
+            <p style="text-align:center;font-size:0.75rem;color:var(--muted);margin-top:10px;">Kamu akan diarahkan ke halaman pembayaran Saya Bayar</p>
+        </div>
+
+        <div id="successMsg" style="display:none;">
+            <div class="success-card">
+                <div class="big">🚀</div>
+                <h2>LINK PEMBAYARAN SIAP!</h2>
+                <p>Halaman pembayaran Saya Bayar sudah terbuka di tab baru.</p>
+                <p>Setelah bayar, status pesanan otomatis berubah dan link download langsung aktif.</p>
+                <div class="order-id-box" id="orderIdText"></div>
+                <p style="font-size:0.78rem;color:var(--muted)">Simpan Order ID ini untuk cek status pesanan.</p>
+                <div class="btn-actions">
+                    <button class="btn btn-primary" id="btnOpenPayment" onclick="openPaymentUrl()">Buka Link Pembayaran</button>
+                    <a href="/orders" class="btn btn-secondary">Lihat Pesanan Saya</a>
+                    <a href="/products" class="btn btn-secondary">Belanja Lagi</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const catIcons = { plugin:'🔌', asset:'🎨', backup:'💾', jasa:'🌐' };
+        let clerkUser = null;
+        let product   = null;
+        let lastPaymentUrl = null;
+
+        const params    = new URLSearchParams(window.location.search);
+        const productId = parseInt(params.get('id'));
+
+        window.addEventListener('load', async () => {
+            await window.Clerk.load();
+            clerkUser = window.Clerk.user;
+            if (!clerkUser) { location.href = '/login'; return; }
+            loadProduct();
+        });
+
+        async function loadProduct() {
+            try {
+                const res  = await fetch('/api/products');
+                const data = await res.json();
+                product = data.products.find(p => p.id === productId);
+                if (!product) return window.location.href = '/products';
+
+                document.getElementById('productName').textContent  = product.name;
+                document.getElementById('productCat').textContent   = product.catLabel;
+                document.getElementById('productPrice').textContent = product.price;
+                document.getElementById('productDesc').textContent  = product.desc;
+                document.getElementById('productIcon').textContent  = catIcons[product.cat] || '📦';
+                document.getElementById('productIconLabel').textContent = product.catLabel;
+
+                const img = document.getElementById('productImg');
+                img.src = product.img;
+                img.alt = product.name;
+            } catch { window.location.href = '/products'; }
+        }
+
+        function openPaymentUrl() {
+            if (lastPaymentUrl) window.open(lastPaymentUrl, '_blank');
+        }
+
+        async function submitOrder() {
+            const btn = document.getElementById('btnOrder');
+            btn.disabled = true;
+            btn.innerHTML = '<span>⏳</span> Membuat Invoice...';
+
+            try {
+                const userId   = clerkUser.id;
+                const username = clerkUser.username || clerkUser.firstName || 'User';
+                const email    = clerkUser.primaryEmailAddress?.emailAddress || '';
+
+                const orderRes = await fetch('/api/order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId, username, email,
+                        productId:   product.id,
+                        productName: product.name,
+                        price:       product.price,
+                        rawPrice:    product.rawPrice
+                    })
+                });
+                const orderData = await orderRes.json();
+                if (!orderData.success) throw new Error(orderData.invoiceError || 'Gagal membuat order');
+
+                document.getElementById('orderIdText').textContent = 'Order ID: ' + orderData.orderId;
+                document.getElementById('checkoutForm').style.display = 'none';
+                document.getElementById('successMsg').style.display   = 'block';
+
+                if (orderData.paymentUrl) {
+                    lastPaymentUrl = orderData.paymentUrl;
+                    setTimeout(() => window.open(orderData.paymentUrl, '_blank'), 400);
+                } else {
+                    document.getElementById('btnOpenPayment').style.display = 'none';
+                    showAlert('alertError', orderData.invoiceError || 'Gagal membuat link pembayaran. Hubungi admin.');
+                }
+            } catch(e) {
+                showAlert('alertError', e.message || 'Terjadi kesalahan. Coba lagi.');
+                btn.disabled = false;
+                btn.innerHTML = '<span>💳</span> Bayar Sekarang';
+            }
+        }
+
+        function showAlert(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.style.display = 'block'; }
+    </script>
+    <script src="/navbar.js"></script>
+    <script>window.addEventListener('load', () => initNavbar('checkout'));</script>
+    <script src="/zenodialog.js"></script>
+</body>
+</html>
