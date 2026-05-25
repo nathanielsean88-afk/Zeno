@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Zeno Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script async crossorigin="anonymous"
+        src="https://real-liger-88.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+        data-clerk-publishable-key="pk_test_cmVhbC1saWdlci04OC5jbGVyay5hY2NvdW50cy5kZXYk">
+    </script>
+    <style>
+        body { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:16px; }
+        .wrap { position:relative; z-index:1; width:100%; max-width:440px; }
+
+        .back { display:inline-flex; align-items:center; gap:6px; color:var(--text2); text-decoration:none;
+                font-size:0.82rem; font-weight:500; margin-bottom:20px; transition:color 0.2s; }
+        .back:hover { color:var(--neon); }
+
+        .card-header { text-align:center; margin-bottom:24px; }
+        .zn-logo { display:inline-flex; align-items:center; gap:10px; margin-bottom:14px; }
+        .zn-logo-icon { width:40px; height:40px; background:var(--grad-neon);
+                        border-radius:10px; display:flex; align-items:center; justify-content:center;
+                        font-size:1.2rem; font-weight:800; color:#000; box-shadow:0 0 18px rgba(22,163,74,0.40); }
+        .zn-logo-text { font-size:1.25rem; font-weight:700;
+                        background:var(--grad-neon); -webkit-background-clip:text;
+                        -webkit-text-fill-color:transparent; background-clip:text; }
+        .card-title { font-size:1.75rem; font-weight:700; letter-spacing:-0.5px; margin-bottom:4px; }
+        .card-sub   { color:var(--text2); font-size:0.88rem; }
+
+        /* Clerk container — kunci utama agar tidak terpotong */
+        #clerk-signin {
+            width: 100% !important;
+            overflow: visible !important;
+            box-sizing: border-box;
+        }
+
+        /* Force semua elemen Clerk full width */
+        #clerk-signin * { box-sizing: border-box !important; }
+
+        .cl-rootBox {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow: visible !important;
+        }
+        .cl-card {
+            width: 100% !important;
+            max-width: 100% !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            border: none !important;
+            overflow: visible !important;
+        }
+        .cl-cardBox {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        .cl-main {
+            width: 100% !important;
+            padding: 0 !important;
+        }
+        .cl-headerTitle,
+        .cl-headerSubtitle,
+        .cl-header { display: none !important; }
+
+        /* Social button full width */
+        .cl-socialButtonsBlockButton {
+            width: 100% !important;
+            background: rgba(255,255,255,0.04) !important;
+            border: 1px solid rgba(22,163,74,0.15) !important;
+            color: var(--text) !important;
+            border-radius: 12px !important;
+            font-family: 'Space Grotesk', sans-serif !important;
+            font-weight: 500 !important;
+            height: 48px !important;
+        }
+        .cl-socialButtonsBlockButton:hover {
+            background: rgba(22,163,74,0.15) !important;
+            border-color: var(--neon) !important;
+        }
+
+        /* Input full width */
+        .cl-formField,
+        .cl-formFieldRow { width: 100% !important; }
+        .cl-formFieldInputShowPasswordButton { color: var(--text2) !important; }
+        .cl-formFieldInput {
+            width: 100% !important;
+            background: rgba(255,255,255,0.05) !important;
+            border: 1px solid rgba(22,163,74,0.15) !important;
+            color: var(--text) !important;
+            border-radius: 12px !important;
+            font-family: 'Space Grotesk', sans-serif !important;
+            height: 48px !important;
+            padding: 0 14px !important;
+            font-size: 0.95rem !important;
+        }
+        .cl-formFieldInput:focus {
+            border-color: var(--neon) !important;
+            box-shadow: 0 0 0 3px rgba(22,163,74,0.12) !important;
+            outline: none !important;
+        }
+        .cl-formFieldLabel {
+            color: var(--text2) !important;
+            font-family: 'Space Grotesk', sans-serif !important;
+            font-size: 0.85rem !important;
+        }
+
+        /* Submit button */
+        .cl-formButtonPrimary {
+            width: 100% !important;
+            background: linear-gradient(135deg,#16a34a,#22c55e) !important;
+            border-radius: 12px !important;
+            box-shadow: 0 0 20px rgba(22,163,74,0.40) !important;
+            font-family: 'Space Grotesk', sans-serif !important;
+            font-weight: 600 !important;
+            height: 48px !important;
+            color: #000 !important;
+            font-size: 0.95rem !important;
+            letter-spacing: 0.5px !important;
+        }
+        .cl-formButtonPrimary:hover {
+            opacity: 0.9 !important;
+            box-shadow: 0 0 28px rgba(22,163,74,0.15) !important;
+        }
+
+        /* Divider */
+        .cl-dividerLine { background: rgba(22,163,74,0.15) !important; }
+        .cl-dividerText { color: var(--text2) !important; font-family:'Space Grotesk',sans-serif !important; }
+
+        /* Footer link */
+        .cl-footerActionText { color: var(--text2) !important; font-family:'Space Grotesk',sans-serif !important; }
+        .cl-footerActionLink { color: var(--neon) !important; font-weight:600 !important; }
+
+        /* Footer "Belum punya akun? Daftar" */
+        .cl-footer { display: block !important; }
+        .cl-footerPages { display: block !important; }
+        .cl-footerAction { text-align: center !important; margin-top: 16px !important; }
+        .cl-footerActionText { color: var(--text2) !important; font-family:'Space Grotesk',sans-serif !important; font-size: 0.88rem !important; }
+        .cl-footerActionLink { color: var(--neon) !important; font-weight: 600 !important; text-decoration: none !important; }
+        .cl-footerActionLink:hover { text-decoration: underline !important; }
+        /* Sembunyikan hanya logo "Secured by Clerk" */
+        [class*="cl-powered"] { display: none !important; }
+        [class*="cl-branded"] { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="bg-anim"><div class="bg-grid"></div><div class="bg-orb bg-orb-1"></div><div class="bg-orb bg-orb-2"></div></div>
+    <div class="wrap">
+        <a href="/" class="back">← Kembali</a>
+        <div class="card card-glow" style="overflow:visible; width:100%;">
+            <div class="card-header">
+                <div class="zn-logo">
+                    <div class="zn-logo-icon">Z</div>
+                    <div class="zn-logo-text">ZenoStore</div>
+                </div>
+                <h1 class="card-title">Selamat Datang</h1>
+                <p class="card-sub">Masuk ke akun kamu</p>
+            </div>
+            <div id="clerk-signin"></div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('load', async () => {
+            await window.Clerk.load();
+            if (window.Clerk.user) { location.href = '/dashboard'; return; }
+            window.Clerk.mountSignIn(document.getElementById('clerk-signin'), {
+                afterSignInUrl: '/dashboard',
+                signUpUrl: '/register',
+                appearance: {
+                    variables: {
+                        colorPrimary: '#16a34a',
+                        colorBackground: 'transparent',
+                        colorText: '#e8f4ff',
+                        colorTextSecondary: '#6a9cc0',
+                        colorInputBackground: 'rgba(255,255,255,0.05)',
+                        colorInputText: '#e8f4ff',
+                        borderRadius: '12px',
+                        fontFamily: "'Space Grotesk', sans-serif",
+                        fontSizeSm: '0.85rem',
+                        fontSizeBase: '0.95rem',
+                        spacingUnit: '1rem',
+                    },
+                    elements: {}
+                }
+            });
+        });
+    </script>
+    <script src="/navbar.js"></script>
+    <script>initNavbar('login');</script>
+    <script src="/zenodialog.js"></script>
+</body>
+</html>
