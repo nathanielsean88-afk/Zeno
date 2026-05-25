@@ -1,0 +1,199 @@
+[
+  {
+    "id": 1,
+    "cat": "plugin",
+    "catLabel": "Plugin",
+    "name": "Items Adder",
+    "desc": "✨ItemsAdder⭐ Plugin premium Minecraft untuk menambahkan Emotes, Mobs, Items, Armors, HUD, GUI, Emojis, Blocks, Wings, Hats, dan Liquids custom ke server kamu. Sangat cocok untuk server survival, RPG, atau creative. Support semua versi Minecraft modern.",
+    "price": "Rp 20.000",
+    "rawPrice": 20000,
+    "img": "images/product-1.jpg",
+    "images": [
+      "images/product-1.jpg",
+      "images/product-1b.jpg",
+      "images/product-1c.jpg"
+    ],
+    "badge": "HOT",
+    "downloadLink": "https://drive.google.com/file/d/1h06htqdhf3AUb_vcFwHsHbiIWRwY968b/view?usp=drivesdk"
+  },
+  {
+    "id": 2,
+    "cat": "plugin",
+    "catLabel": "Plugin",
+    "name": "MMO Items",
+    "desc": "⚔️ MMO Items adalah plugin premium untuk membuat item custom dengan skill dan ability unik. Support versi 1.8 hingga 1.21.11. Cocok untuk server RPG, dungeon, atau survival dengan elemen game yang lebih dalam.",
+    "price": "Rp 15.000",
+    "rawPrice": 15000,
+    "img": "images/product-2.jpg",
+    "images": [
+      "images/product-2.jpg",
+      "images/product-2b.jpg"
+    ],
+    "badge": "HOT",
+    "downloadLink": "https://drive.google.com/file/d/14s1nO2LNrm80DxphuE8R9MIDLGKdIQ4P/view?usp=drivesdk"
+  },
+  {
+    "id": 3,
+    "cat": "plugin",
+    "catLabel": "Plugin",
+    "name": "Vulkan Anti Cheat",
+    "desc": "🛡️ Vulkan Anti Cheat adalah sistem anti-cheat canggih untuk server Minecraft. Support versi 1.8 hingga 26.1. Dilengkapi dengan deteksi killfaura, speedhack, fly, reach, dan berbagai cheat umum lainnya secara otomatis.",
+    "price": "Rp 15.000",
+    "rawPrice": 15000,
+    "img": "images/product-3.jpg",
+    "images": [
+      "images/product-3.jpg",
+      "images/product-3b.jpg"
+    ],
+    "badge": "NEW",
+    "downloadLink": "https://drive.google.com/file/d/1Yw35MlOppj3-rSTw_R3okL7iqwLD0nLE/view?usp=drivesdk"
+  },
+  {
+    "id": 4,
+    "cat": "plugin",
+    "catLabel": "Plugin",
+    "name": "Citizen",
+    "desc": "🧑 Citizens adalah plugin NPC premium terpopuler untuk Minecraft. Tambahkan NPC interaktif ke server kamu — bisa dijadikan quest giver, merchant, penjaga spawn, dan lainnya. Support semua versi Minecraft.",
+    "price": "Rp 15.000",
+    "rawPrice": 15000,
+    "img": "images/product-4.jpg",
+    "images": [
+      "images/product-4.jpg",
+      "images/product-4b.jpg"
+    ],
+    "badge": "",
+    "downloadLink": "https://drive.google.com/file/d/1QpvD8n5eCocqwe08k4urnv_tNXyUbHPe/view?usp=drivesdk"
+  },
+  {
+    "id": 5,
+    "cat": "asset",
+    "catLabel": "Asset",
+    "name": "Resource Pack Premium",
+    "desc": "🎨 Resource Pack HD 128x128 dengan visual menakjubkan. Desain modern dengan tekstur halus dan detail tinggi. Cocok untuk server survival, RPG, atau creative yang ingin tampilan lebih premium dari default Minecraft.",
+    "price": "Rp 15.000",
+    "rawPrice": 15000,
+    "img": "images/product-5.jpg",
+    "images": [
+      "images/product-5.jpg",
+      "images/product-5b.jpg",
+      "images/product-5c.jpg"
+    ],
+    "badge": "",
+    "downloadLink": "https://drive.google.com/your-link-5"
+  },
+  {
+    "id": 6,
+    "cat": "asset",
+    "catLabel": "Asset",
+    "name": "Custom Map Lobby",
+    "desc": "🗺️ Map lobby server Minecraft dengan desain profesional dan custom. Dilengkapi area spawn, portal antar game, leaderboard display, dan NPC slot. Langsung pakai, tinggal import ke server kamu.",
+    "price": "Rp 30.000",
+    "rawPrice": 30000,
+    "img": "images/product-6.jpg",
+    "images": [
+      "images/product-6.jpg",
+      "images/product-6b.jpg",
+      "images/product-6c.jpg"
+    ],
+    "badge": "HOT",
+    "downloadLink": "https://drive.google.com/your-link-6"
+  },
+  {
+    "id": 7,
+    "cat": "asset",
+    "catLabel": "Asset",
+    "name": "Particle Effect Pack",
+    "desc": "✨ Kumpulan efek partikel custom untuk server kamu. Termasuk efek aura, trail, level up, damage indicator, dan masih banyak lagi. Kompatibel dengan plugin populer seperti ItemsAdder dan EffectLib.",
+    "price": "Rp 12.000",
+    "rawPrice": 12000,
+    "img": "images/product-7.jpg",
+    "images": [
+      "images/product-7.jpg",
+      "images/product-7b.jpg"
+    ],
+    "badge": "",
+    "downloadLink": "https://drive.google.com/your-link-7"
+  },
+  {
+    "id": 8,
+    "cat": "backup",
+    "catLabel": "Backup",
+    "name": "Superior Survival - Oceanic Lab",
+    "desc": "🌊 Backup server survival lengkap versi 1.21.1 dengan tema Oceanic Lab. Sudah termasuk plugin, konfigurasi, spawn map custom, ekonomi, dan sistem quest. Tinggal extract dan jalankan — server langsung siap pakai.",
+    "price": "Rp 20.000",
+    "rawPrice": 20000,
+    "img": "images/product-8.jpg",
+    "images": [
+      "images/product-8.jpg",
+      "images/product-8b.jpg",
+      "images/product-8c.jpg"
+    ],
+    "badge": "",
+    "downloadLink": "https://www.mediafire.com/file/vuzqi267ydin08t/Superior_Survival_2.0.0.zip/file"
+  },
+  {
+    "id": 9,
+    "cat": "backup",
+    "catLabel": "Backup",
+    "name": "Lifesteal SMP - Server Setup",
+    "desc": "❤️ Setup server Lifesteal SMP lengkap untuk versi 1.20.4 hingga 1.21. Termasuk semua plugin lifesteal, konfigurasi PvP, sistem heart, dan plugin pendukung. Setup mudah, langsung bisa dimainkan bersama teman.",
+    "price": "Rp 20.000",
+    "rawPrice": 20000,
+    "img": "images/product-9.jpg",
+    "images": [
+      "images/product-9.jpg",
+      "images/product-9b.jpg"
+    ],
+    "badge": "PRO",
+    "downloadLink": "https://www.mediafire.com/file/9c8498gnh2yuvzu/Lifesteal+Server+Setup+v1.1+_1.21_.zip/file"
+  },
+  {
+    "id": 10,
+    "cat": "jasa",
+    "catLabel": "Jasa",
+    "name": "Website Landing Page",
+    "desc": "🌐 Jasa pembuatan website landing page profesional untuk server Minecraft kamu. Desain modern, mobile-friendly, dan SEO-ready. Termasuk halaman utama, fitur server, galeri screenshot, dan tombol join. Pengerjaan 3-5 hari kerja.",
+    "price": "Rp 150.000",
+    "rawPrice": 150000,
+    "img": "images/product-10.jpg",
+    "images": [
+      "images/product-10.jpg",
+      "images/product-10b.jpg",
+      "images/product-10c.jpg"
+    ],
+    "badge": "",
+    "downloadLink": "https://wa.me/6282298673652"
+  },
+  {
+    "id": 11,
+    "cat": "jasa",
+    "catLabel": "Jasa",
+    "name": "Website Toko Online",
+    "desc": "🛒 Jasa pembuatan website toko online lengkap dengan sistem pembayaran, manajemen produk, dan dashboard admin. Stack: Node.js + Express + Clerk Auth. Fitur: login/register, checkout, konfirmasi pembayaran, dan tracking pesanan. Pengerjaan 7-14 hari kerja.",
+    "price": "Rp 300.000",
+    "rawPrice": 300000,
+    "img": "images/product-11.jpg",
+    "images": [
+      "images/product-11.jpg",
+      "images/product-11b.jpg"
+    ],
+    "badge": "",
+    "downloadLink": "https://wa.me/6282298673652"
+  },
+  {
+    "id": 12,
+    "cat": "jasa",
+    "catLabel": "Jasa",
+    "name": "Bot Discord",
+    "desc": "🤖 Jasa pembuatan bot Discord custom untuk server Minecraft kamu. Fitur bisa disesuaikan: status server, whitelist, link verifikasi, log channel, auto-role, dan lainnya. Dibuat dengan Discord.js. Revisi 2x termasuk.",
+    "price": "Rp 100.000",
+    "rawPrice": 100000,
+    "img": "images/product-12.jpg",
+    "images": [
+      "images/product-12.jpg",
+      "images/product-12b.jpg"
+    ],
+    "badge": "NEW",
+    "downloadLink": "https://wa.me/6282298673652"
+  }
+]
