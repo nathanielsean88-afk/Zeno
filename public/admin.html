@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel — Zeno Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Admin login */
+        .admin-login { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
+        .admin-panel { display:none; }
+        .page-wrap { position:relative; z-index:1; padding:80px 16px 60px; max-width:900px; margin:0 auto; }
+
+        .stats-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; margin-bottom:24px; }
+        .stat-card { background:var(--card); border:1px solid var(--border2); border-radius:10px; padding:16px; text-align:center; }
+        .stat-card .num { font-family:'Exo 2',sans-serif; font-size:1.6rem; font-weight:900; color:var(--blue-bright); }
+        .stat-card .lbl { font-size:0.72rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-top:3px; }
+
+        .filter-tabs { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+        .tab-btn { padding:7px 16px; border-radius:20px; font-family:'Sora',sans-serif; font-size:0.78rem; font-weight:700; cursor:pointer; transition:all 0.2s; border:1px solid var(--border2); background:transparent; color:var(--muted); }
+        .tab-btn.active, .tab-btn:hover { background:var(--blue); color:#fff; border-color:var(--blue); }
+
+        .order-card { background:var(--card); border:1px solid var(--border2); border-radius:12px; margin-bottom:12px; overflow:hidden; }
+        .order-head { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--border2); flex-wrap:wrap; gap:8px; }
+        .order-id-txt { font-family:'Exo 2',sans-serif; font-size:0.82rem; font-weight:800; color:var(--blue-bright); }
+        .order-date { font-size:0.72rem; color:var(--muted); }
+        .order-body { padding:14px 16px; }
+        .order-info-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; font-size:0.82rem; }
+        .order-info-item { background:var(--dark3); border-radius:6px; padding:8px 10px; }
+        .order-info-label { font-size:0.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px; }
+        .order-info-value { font-weight:700; color:var(--text); }
+
+        /* Bukti foto */
+        .bukti-wrap { margin:12px 0; }
+        .bukti-wrap h4 { font-size:0.78rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+        .bukti-img { max-width:100%; max-height:300px; border-radius:10px; border:1px solid var(--border2); cursor:pointer; object-fit:contain; display:block; }
+        .no-bukti { background:var(--dark3); border:1px dashed var(--border2); border-radius:8px; padding:20px; text-align:center; font-size:0.82rem; color:var(--muted); }
+
+        /* Action buttons */
+        .action-buttons { display:flex; gap:10px; flex-wrap:wrap; }
+        .btn-approve { padding:9px 20px; background:var(--success); color:#fff; border:none; border-radius:8px; font-family:'Sora',sans-serif; font-size:0.82rem; font-weight:700; cursor:pointer; transition:all 0.2s; }
+        .btn-approve:hover { background:#16a34a; }
+        .btn-reject { padding:9px 20px; background:var(--error); color:#fff; border:none; border-radius:8px; font-family:'Sora',sans-serif; font-size:0.82rem; font-weight:700; cursor:pointer; transition:all 0.2s; }
+        .btn-reject:hover { background:#dc2626; }
+        .btn-wa-buyer { padding:9px 20px; background:#25d366; color:#fff; border:none; border-radius:8px; font-family:'Sora',sans-serif; font-size:0.82rem; font-weight:700; cursor:pointer; transition:all 0.2s; }
+        .btn-wa-buyer:hover { background:#1ebe5d; }
+        .approved-badge { padding:9px 16px; background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.3); color:var(--success); border-radius:8px; font-size:0.82rem; font-weight:700; }
+
+        /* Image modal */
+        .img-modal { position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; display:none; align-items:center; justify-content:center; padding:20px; cursor:pointer; }
+        .img-modal.open { display:flex; }
+        .img-modal img { max-width:100%; max-height:90vh; border-radius:10px; object-fit:contain; }
+
+        .empty-box { text-align:center; padding:50px 20px; color:var(--muted); background:var(--card); border:1px dashed var(--border2); border-radius:12px; }
+
+        /* Login card */
+        .login-wrap { width:100%; max-width:360px; }
+        .login-wrap .card-logo { font-family:'Exo 2',sans-serif; font-size:1.1rem; font-weight:900; color:var(--blue-bright); letter-spacing:2px; margin-bottom:4px; }
+        .login-wrap .card-logo span { color:var(--text); }
+        .login-wrap h2 { font-family:'Exo 2',sans-serif; font-size:1.4rem; font-weight:900; margin-bottom:4px; }
+        .login-wrap p { color:var(--muted); font-size:0.85rem; margin-bottom:24px; }
+    </style>
+</head>
+<body>
+    <div class="glow-blue"></div>
+
+    <!-- Admin Login -->
+    <div class="admin-login" id="adminLogin">
+        <div class="login-wrap">
+            <div class="card card-top-line">
+                <div class="card-logo">ZENO<span>STORE</span></div>
+                <h2>ADMIN PANEL</h2>
+                <p>Masuk dengan password admin</p>
+                <div class="alert alert-error" id="loginAlert"></div>
+                <div class="form-group">
+                    <label>Password Admin</label>
+                    <input type="password" id="adminPass" placeholder="••••••••">
+                </div>
+                <button class="btn btn-primary btn-full" onclick="adminLogin()">MASUK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="adminPanel">
+        <nav style="position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:rgba(3,7,18,0.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--border2);">
+            <a href="/" class="nav-logo">ZENO<span>STORE</span> <span style="font-size:0.7rem;background:var(--blue);color:#fff;padding:2px 8px;border-radius:4px;margin-left:8px;font-family:'Sora',sans-serif;">ADMIN</span></a>
+            <button class="btn-sm btn-outline-sm" onclick="adminLogout()">Logout Admin</button>
+        </nav>
+
+        <div class="page-wrap">
+            <div class="section-tag">// Admin</div>
+            <h1 style="font-family:'Exo 2',sans-serif;font-size:1.8rem;font-weight:900;margin-bottom:20px;">SEMUA PESANAN</h1>
+
+            <div class="stats-row" id="statsRow"></div>
+
+            <div class="filter-tabs">
+                <button class="tab-btn active" onclick="filterOrders('all',this)">Semua</button>
+                <button class="tab-btn" onclick="filterOrders('pending',this)">Menunggu</button>
+                <button class="tab-btn" onclick="filterOrders('confirming',this)">Perlu Konfirmasi</button>
+                <button class="tab-btn" onclick="filterOrders('paid',this)">Selesai</button>
+                <button class="tab-btn" onclick="filterOrders('cancelled',this)">Dibatalkan</button>
+            </div>
+
+            <div id="orderList">
+                <div class="empty-box"><p>Memuat...</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div class="img-modal" id="imgModal" onclick="closeModal()">
+        <img id="modalImg" src="" alt="Bukti Transfer">
+    </div>
+
+    <script>
+        // GANTI PASSWORD ADMIN KAMU DI SINI!
+        const ADMIN_PASSWORD = 'zenostore2024';
+        const WA_NUMBER = '6282298673652';
+
+        let allOrders = [];
+
+        function adminLogin() {
+            const pass = document.getElementById('adminPass').value;
+            if (pass === ADMIN_PASSWORD) {
+                sessionStorage.setItem('adminAuth', '1');
+                document.getElementById('adminLogin').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                loadOrders();
+            } else {
+                const el = document.getElementById('loginAlert');
+                el.textContent = 'Password salah!';
+                el.style.display = 'block';
+            }
+        }
+
+        function adminLogout() {
+            sessionStorage.removeItem('adminAuth');
+            location.reload();
+        }
+
+        document.getElementById('adminPass').addEventListener('keydown', e => { if(e.key==='Enter') adminLogin(); });
+
+        if (sessionStorage.getItem('adminAuth') === '1') {
+            document.getElementById('adminLogin').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            loadOrders();
+        }
+
+        function fmt(d) { return new Date(d).toLocaleString('id-ID',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+
+        function statusBadge(s) {
+            return { pending:['badge-warning','Menunggu Bukti'], confirming:['badge-blue','Perlu Konfirmasi'], paid:['badge-success','Selesai'], cancelled:['badge-error','Dibatalkan'] }[s] || ['badge-warning','Menunggu'];
+        }
+
+        function renderStats(orders) {
+            const total     = orders.length;
+            const confirm   = orders.filter(o=>o.status==='confirming').length;
+            const paid      = orders.filter(o=>o.status==='paid').length;
+            const pending   = orders.filter(o=>o.status==='pending').length;
+            document.getElementById('statsRow').innerHTML = `
+                <div class="stat-card"><div class="num">${total}</div><div class="lbl">Total</div></div>
+                <div class="stat-card"><div class="num" style="color:var(--warning)">${pending}</div><div class="lbl">Menunggu</div></div>
+                <div class="stat-card"><div class="num" style="color:var(--blue-bright)">${confirm}</div><div class="lbl">Perlu Konfirmasi</div></div>
+                <div class="stat-card"><div class="num" style="color:var(--success)">${paid}</div><div class="lbl">Selesai</div></div>
+            `;
+        }
+
+        function renderOrders(orders) {
+            const list = document.getElementById('orderList');
+            if (!orders.length) {
+                list.innerHTML = `<div class="empty-box"><p>Tidak ada pesanan</p></div>`;
+                return;
+            }
+            list.innerHTML = orders.map(o => {
+                const [bc, bl] = statusBadge(o.status);
+                const payLabel = { dana:'Dana', gopay:'GoPay', qris:'QRIS' }[o.paymentMethod] || o.paymentMethod;
+                const hasBukti = o.buktiUrl && o.buktiUrl.startsWith('data:image');
+                const actionBtns = o.status === 'confirming' ? `
+                    <button class="btn-approve" onclick="approveOrder('${o.orderId}')">Approve</button>
+                    <button class="btn-reject" onclick="rejectOrder('${o.orderId}')">Tolak</button>
+                    <button class="btn-wa-buyer" onclick="contactBuyer('${o.username}','${o.orderId}','${o.productName}')">WA Pembeli</button>
+                ` : o.status === 'paid' ? `<span class="approved-badge">Sudah Diapprove</span>` : '';
+
+                return `
+                <div class="order-card" id="card-${o.orderId}">
+                    <div class="order-head">
+                        <div><div class="order-id-txt">${o.orderId}</div><div class="order-date">${fmt(o.createdAt)}</div></div>
+                        <span class="badge ${bc}">${bl}</span>
+                    </div>
+                    <div class="order-body">
+                        <div class="order-info-grid">
+                            <div class="order-info-item"><div class="order-info-label">Pembeli</div><div class="order-info-value">${o.username}</div></div>
+                            <div class="order-info-item"><div class="order-info-label">Produk</div><div class="order-info-value">${o.productName}</div></div>
+                            <div class="order-info-item"><div class="order-info-label">Harga</div><div class="order-info-value" style="color:var(--blue-bright)">${o.price}</div></div>
+                            <div class="order-info-item"><div class="order-info-label">Metode</div><div class="order-info-value">${payLabel}</div></div>
+                        </div>
+                        <div class="bukti-wrap">
+                            <h4>Bukti Transfer</h4>
+                            ${hasBukti
+                                ? `<img class="bukti-img" src="${o.buktiUrl}" alt="Bukti" onclick="openModal('${o.orderId}')">`
+                                : `<div class="no-bukti">Belum ada bukti transfer</div>`
+                            }
+                        </div>
+                        ${actionBtns ? `<div class="action-buttons">${actionBtns}</div>` : ''}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function filterOrders(status, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderOrders(status === 'all' ? allOrders : allOrders.filter(o => o.status === status));
+        }
+
+        async function _doApprove(orderId) {
+            const res = await fetch('/api/admin/approve', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({orderId}) });
+            const data = await res.json();
+            if (data.success) { zenoAlert('Pesanan diapprove! Link download sudah aktif untuk pembeli.', 'success'); loadOrders(); }
+        }
+        async function _doReject(orderId) {
+            const res = await fetch('/api/admin/reject', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({orderId}) });
+            const data = await res.json();
+            if (data.success) { zenoAlert('Pesanan ditolak.', 'warning'); loadOrders(); }
+        }
+        function approveOrder(orderId) {
+            zenoConfirm('Approve pesanan ' + orderId + '?', function() { _doApprove(orderId); }, 'success', 'Approve Pesanan');
+        }
+        function rejectOrder(orderId) {
+            zenoConfirm('Tolak pesanan ' + orderId + '?', function() { _doReject(orderId); }, 'error', 'Tolak Pesanan');
+        }
+
+        function contactBuyer(username, orderId, productName) {
+            const msg = encodeURIComponent(`Halo ${username}! 👋\n\nKami dari Zeno Store ingin mengkonfirmasi pesanan kamu:\n\nOrder ID: ${orderId}\nProduk: ${productName}\n\nPembayaran sudah kami terima dan sedang diproses. Terima kasih! 🙏`);
+            window.open(`https://wa.me/?text=${msg}`, '_blank');
+        }
+
+        function openModal(orderId) {
+            const order = allOrders.find(o => o.orderId === orderId);
+            if (!order || !order.buktiUrl) return;
+            document.getElementById('modalImg').src = order.buktiUrl;
+            document.getElementById('imgModal').classList.add('open');
+        }
+
+        function closeModal() {
+            document.getElementById('imgModal').classList.remove('open');
+        }
+
+        async function loadOrders() {
+            try {
+                const res = await fetch('/api/admin/orders');
+                const data = await res.json();
+                allOrders = data.orders || [];
+                renderStats(allOrders);
+                renderOrders(allOrders);
+            } catch {
+                document.getElementById('orderList').innerHTML = '<div class="empty-box"><p>Gagal memuat data.</p></div>';
+            }
+        }
+    </script>
+    <script src="/zenodialog.js"></script>
+</body>
+</html>
