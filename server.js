@@ -1,7 +1,41 @@
 const express = require('express');
 const path    = require('path');
 const fs      = require('fs');
+const https   = require('https');
 const { clerkMiddleware, requireAuth, getAuth } = require('@clerk/express');
+
+// ─── Saya Bayar helper ────────────────────────────────────────────────────────
+const SAYABAYAR_API_KEY  = process.env.SAYABAYAR_API_KEY || '';
+const SAYABAYAR_BASE_URL = 'https://api.sayabayar.com';
+const WEBHOOK_BASE_URL   = process.env.WEBHOOK_BASE_URL || 'https://zenov5-production.up.railway.app';
+
+function sayabayarRequest(method, endpoint, body) {
+    return new Promise((resolve, reject) => {
+        const data    = body ? JSON.stringify(body) : null;
+        const url     = new URL(SAYABAYAR_BASE_URL + endpoint);
+        const options = {
+            hostname: url.hostname,
+            path:     url.pathname,
+            method,
+            headers: {
+                'Authorization': 'Bearer ' + SAYABAYAR_API_KEY,
+                'Content-Type':  'application/json',
+                ...(data ? { 'Content-Length': Buffer.byteLength(data) } : {})
+            }
+        };
+        const req = https.request(options, res => {
+            let raw = '';
+            res.on('data', chunk => raw += chunk);
+            res.on('end', () => {
+                try { resolve(JSON.parse(raw)); }
+                catch { resolve({ raw }); }
+            });
+        });
+        req.on('error', reject);
+        if (data) req.write(data);
+        req.end();
+    });
+}
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -61,14 +95,87 @@ app.get('/api/me', (req, res) => {
 });
 
 // ─── API: Create order (butuh login) ─────────────────────────────────────────
-app.post('/api/order', requireAuth(), (req, res) => {
+app.post('/api/order', requireAuth(), async (req, res) => {
     const { userId } = getAuth(req);
-    const { username, email, productId, productName, price, paymentMethod } = req.body;
+    const { username, email, productId, productName, price, rawPrice } = req.body;
     const orders  = getOrders();
     const orderId = 'ZNO' + Date.now();
-    orders.push({ orderId, userId, username, email, productId, productName, price, paymentMethod, status: 'pending', createdAt: new Date().toISOString() });
+
+    // Buat invoice ke Saya Bayar
+    let paymentUrl   = null;
+    let invoiceId    = null;
+    let invoiceError = null;
+
+    try {
+        const invoicePayload = {
+            external_id:          orderId,
+            amount:               Number(rawPrice),
+            payer_email:          email,
+            description:          'ZenoStore - ' + productName,
+            success_redirect_url: WEBHOOK_BASE_URL + '/orders',
+            failure_redirect_url: WEBHOOK_BASE_URL + '/checkout',
+            webhook_url:          WEBHOOK_BASE_URL + '/api/webhook/sayabayar'
+        };
+        const sbRes = await sayabayarRequest('POST', '/v1/invoices', invoicePayload);
+        if (sbRes && sbRes.invoice_url) {
+            paymentUrl = sbRes.invoice_url;
+            invoiceId  = sbRes.id || sbRes.external_id || null;
+        } else {
+            invoiceError = JSON.stringify(sbRes);
+        }
+    } catch (err) {
+        invoiceError = err.message;
+    }
+
+    orders.push({
+        orderId, userId, username, email,
+        productId: Number(productId), productName, price,
+        paymentMethod: 'sayabayar',
+        invoiceId, paymentUrl,
+        status: 'pending',
+        createdAt: new Date().toISOString()
+    });
     saveOrders(orders);
-    res.json({ success: true, orderId });
+
+    if (paymentUrl) {
+        res.json({ success: true, orderId, paymentUrl });
+    } else {
+        console.error('Saya Bayar invoice error:', invoiceError);
+        res.json({ success: true, orderId, paymentUrl: null, invoiceError: 'Gagal buat link pembayaran, hubungi admin.' });
+    }
+});
+
+
+// ─── API: Webhook Saya Bayar (otomatis update status ke paid) ────────────────
+app.post('/api/webhook/sayabayar', express.raw({ type: '*/*' }), (req, res) => {
+    let payload;
+    try {
+        payload = JSON.parse(req.body.toString());
+    } catch {
+        return res.status(400).json({ success: false, message: 'Invalid JSON' });
+    }
+
+    console.log('Webhook Saya Bayar diterima:', JSON.stringify(payload));
+
+    // Event yang diproses: INVOICE.PAID
+    if (payload.event === 'INVOICE.PAID' || payload.status === 'PAID') {
+        const externalId = payload.external_id || (payload.data && payload.data.external_id);
+        if (externalId) {
+            const orders = getOrders();
+            const idx    = orders.findIndex(o => o.orderId === externalId);
+            if (idx !== -1) {
+                orders[idx].status     = 'paid';
+                orders[idx].paidAt     = new Date().toISOString();
+                orders[idx].webhookRaw = payload;
+                saveOrders(orders);
+                console.log('Order ' + externalId + ' berhasil di-update ke PAID');
+            } else {
+                console.warn('Order tidak ditemukan untuk external_id:', externalId);
+            }
+        }
+    }
+
+    res.json({ success: true });
 });
 
 // ─── API: Confirm payment ─────────────────────────────────────────────────────
